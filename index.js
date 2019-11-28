@@ -25,7 +25,14 @@ const start = () => {
     })
   })
 
-  const server = new ApolloServer({ typeDefs, resolvers });
+  const server = new ApolloServer({ 
+    typeDefs, 
+    resolvers,
+    introspection: true,
+    playground: true,
+    debug: true,
+    tracing: true
+  });
   server.applyMiddleware({ app, path: '/' })
 
   app.listen({ port }, () => { console.log(`Listening on port ${port}`) })
