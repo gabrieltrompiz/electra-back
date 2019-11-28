@@ -1,0 +1,38 @@
+{
+  "name": "electron-server",
+  "version": "0.0.1",
+  "description": "Electron's server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"test\"",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gabrieltrompiz/thesis.git"
+  },
+  "keywords": [
+    "collaboration",
+    "electron",
+    "react",
+    "graphql",
+    "github"
+  ],
+  "author": "Gabriel Trompiz",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gabrieltrompiz/thesis/issues"
+  },
+  "homepage": "https://github.com/gabrieltrompiz/thesis#readme",
+  "dependencies": {
+    "apollo-server-express": "^2.9.12",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "graphql": "^14.5.8",
+    "throng": "^4.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.1"
+  }
+}
