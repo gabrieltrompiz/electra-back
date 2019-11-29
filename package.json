@@ -26,10 +26,18 @@
   },
   "homepage": "https://github.com/gabrieltrompiz/thesis#readme",
   "dependencies": {
+    "@apollo/federation": "^0.11.2",
+    "@apollo/gateway": "^0.11.3",
+    "apollo-link-context": "^1.0.19",
+    "apollo-link-http": "^1.5.16",
+    "apollo-server": "^2.9.12",
     "apollo-server-express": "^2.9.12",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "graphql": "^14.5.8",
+    "graphql-tools": "^4.0.6",
+    "graphql-tools-fork": "^7.2.0",
+    "node-fetch": "^2.6.0",
     "throng": "^4.0.0"
   },
   "devDependencies": {
