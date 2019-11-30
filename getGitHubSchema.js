@@ -7,7 +7,7 @@ module.exports.getGitHubSchema = async (authorization, endpoint) => {
   const http = new HttpLink({ uri: endpoint, fetch });
   const link = setContext(() => ({
     headers: {
-      authorization: `Bearer ${authorization}`,
+      'Authorization': `Bearer ${authorization}`,
     },
   })).concat(http);
   const schema = await introspectSchema(link);

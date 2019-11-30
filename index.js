@@ -1,10 +1,11 @@
 const throng = require('throng');
 const WORKERS = process.env.WEB_CONCURRENCY || 1;
 const port = process.env.PORT || 5000;
+require('dotenv').config();
 
 const app = require('express')();
 
-const { ApolloServer, gql } = require('apollo-server-express');
+const { ApolloServer } = require('apollo-server-express');
 const { mergeSchemas, makeExecutableSchema } = require('graphql-tools');
 
 const { getGitHubSchema } = require('./getGitHubSchema');
@@ -17,21 +18,8 @@ const start = async () => {
     })
   })
 
-  const typeDefs = gql`
-    type Query {
-      hello: String
-    }
-
-    type Hello {
-      content: String
-    }
-  `;
-
-  const resolvers = {
-    Query: {
-      hello: () => 'Hello world!',
-    },
-  };
+  const { typeDefs, resolvers } = require('./schemas/electra.schema');
+  const { linkTypeDefs } = require('./schemas/extensions.schema');
 
   const electraSchema = makeExecutableSchema({
     typeDefs,
@@ -39,12 +27,12 @@ const start = async () => {
   })
 
   const gitHubSchema = await getGitHubSchema(
-    '72ecfb2527edf74bff29d3718a558f97a2f303bc',
+    process.env.GITHUB_TOKEN || '',
     'https://api.github.com/graphql'
   );
 
   const mainSchema = mergeSchemas({
-    schemas: [gitHubSchema, electraSchema]
+    schemas: [gitHubSchema, electraSchema, linkTypeDefs]
   })
 
   const server = new ApolloServer({ 
