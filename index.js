@@ -25,10 +25,9 @@ const start = async () => {
     })
   });
 
-  const initSchemas = async (update = false) => {
-    gitHubSchema = !update ? await controller.createGHchema('https://api.github.com/graphql', subject) : await controller.updateGHSchema();
+  const initSchemas = async () => {
+    gitHubSchema = await controller.createGHchema('https://api.github.com/graphql', subject);
     schemas = [];
-    if(update) server.stop();
 
     const { typeDefs, resolvers } = require('./schemas/electra.schema');
     const { linkTypeDefs } = require('./schemas/extensions.schema');
@@ -63,7 +62,7 @@ const start = async () => {
   subject.subscribe({
     next: initSchemas
   });
-  subject.next(false);
+  subject.next();
 
   app.listen({ port }, () => { console.log(`Listening on port ${port}`) });
 }

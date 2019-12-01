@@ -15,7 +15,7 @@ module.exports = class GitHubSchemaController {
   }
 
   createGHchema = async () => {
-    console.log('Fetching initial GH schema without resolvers.');
+    console.log('Using initial GH schema without resolvers.');
     this.http = new HttpLink({ uri: this.endpoint, fetch });
     this.link = setContext((request, prevContext) => {
       if(this.haveResolvers && prevContext.graphqlContext) {
@@ -24,7 +24,7 @@ module.exports = class GitHubSchemaController {
       if(!this.haveResolvers && prevContext.graphqlContext && prevContext.graphqlContext.headers.authorization) {
         this.haveResolvers = true;
         this.token = prevContext.graphqlContext.headers.authorization;
-        this.subject.next(true);
+        this.subject.next();
       }
       return prevContext.graphqlContext ?
       ({
@@ -45,20 +45,6 @@ module.exports = class GitHubSchemaController {
     return makeRemoteExecutableSchema({
       schema: this.schema,
       link: this.link
-    })
-  }
-
-  updateGHSchema = async () => {
-    console.log('Updating GitHub schema with token: ' + this.token);
-    const newLink = setContext(() => ({
-      headers: {
-        'Authorization': this.token
-      }
-    })).concat(this.http)
-    this.schema = await introspectSchema(newLink);
-    return makeRemoteExecutableSchema({
-      schema: this.schema,
-      link: newLink
     })
   }
 }
