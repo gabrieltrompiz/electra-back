@@ -5,10 +5,17 @@ require('dotenv').config();
 
 const app = require('express')();
 
+const { Subject } = require('rxjs');
 const { ApolloServer } = require('apollo-server-express');
 const { mergeSchemas, makeExecutableSchema } = require('graphql-tools');
 
-const { getGitHubSchema } = require('./getGitHubSchema');
+let schemas = [];
+let gitHubSchema = null;
+let server = null;
+const subject = new Subject();
+
+const GitHubSchemaController = require('./controllers/GitHubSchemaController');
+const controller = new GitHubSchemaController('https://api.github.com/graphql', subject);
 
 const start = async () => {
   app.get('/', (req, res) => {
@@ -16,36 +23,49 @@ const start = async () => {
       status: 200,
       message: 'Ok!'
     })
-  })
-
-  const { typeDefs, resolvers } = require('./schemas/electra.schema');
-  const { linkTypeDefs } = require('./schemas/extensions.schema');
-
-  const electraSchema = makeExecutableSchema({
-    typeDefs,
-    resolvers
-  })
-
-  const gitHubSchema = await getGitHubSchema(
-    process.env.GITHUB_TOKEN || '',
-    'https://api.github.com/graphql'
-  );
-
-  const mainSchema = mergeSchemas({
-    schemas: [gitHubSchema, electraSchema, linkTypeDefs]
-  })
-
-  const server = new ApolloServer({ 
-    schema: mainSchema,
-    introspection: true,
-    playground: true,
-    debug: true,
-    tracing: true
   });
 
-  server.applyMiddleware({ app, path: '/' })
+  const initSchemas = async (update = false) => {
+    gitHubSchema = !update ? await controller.createGHchema('https://api.github.com/graphql', subject) : await controller.updateGHSchema();
+    schemas = [];
+    if(update) server.stop();
 
-  app.listen({ port }, () => { console.log(`Listening on port ${port}`) })
+    const { typeDefs, resolvers } = require('./schemas/electra.schema');
+    const { linkTypeDefs } = require('./schemas/extensions.schema');
+
+    const electraSchema = makeExecutableSchema({
+      typeDefs,
+      resolvers
+    });
+
+    schemas.push(electraSchema);
+    schemas.push(gitHubSchema);
+    schemas.push(linkTypeDefs);
+    
+    const mainSchema = mergeSchemas({
+      schemas
+    });
+
+    server = new ApolloServer({ 
+      schema: mainSchema,
+      introspection: true,
+      playground: true,
+      debug: true,
+      tracing: true,
+      context: ({ req }) => ({
+        headers: req.headers
+      })
+    });
+
+    server.applyMiddleware({ app, path: '/' });
+  }
+
+  subject.subscribe({
+    next: initSchemas
+  });
+  subject.next(false);
+
+  app.listen({ port }, () => { console.log(`Listening on port ${port}`) });
 }
 
 throng({
