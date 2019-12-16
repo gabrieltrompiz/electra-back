@@ -12,34 +12,32 @@ module.exports = class GitHubSchemaController {
     this.endpoint = endpoint;
     this.subject = subject;
     this.token = null;
+    this.cachedSchema = null;
   }
 
-  createGHchema = async () => {
-    console.log('Using initial GH schema without resolvers.');
+  createGHSchema = async () => {
     this.http = new HttpLink({ uri: this.endpoint, fetch });
     this.link = setContext((request, prevContext) => {
       if(this.haveResolvers && prevContext.graphqlContext) {
-        this.token = this.token !== prevContext.graphqlContext.headers.authorization ? prevContext.graphqlContext.headers.authorization : this.token;
+        this.token = this.token !== prevContext.graphqlContext.getUser().gitHubToken ? prevContext.graphqlContext.getUser().gitHubToken : this.token;
       }
-      if(!this.haveResolvers && prevContext.graphqlContext && prevContext.graphqlContext.headers.authorization) {
+      if(!this.haveResolvers && prevContext.graphqlContext && prevContext.graphqlContext.getUser().gitHubToken) {
         this.haveResolvers = true;
-        this.token = prevContext.graphqlContext.headers.authorization;
+        this.token = prevContext.graphqlContext.getUser().gitHubToken;
         this.subject.next();
       }
-      return prevContext.graphqlContext ?
-      ({
-          headers: {
-            'Authorization': this.token,
-          },
-        }) : 
-        ({ headers: {} })
+      return prevContext.graphqlContext ? 
+      ({ headers: { 'Authorization': `Bearer ${this.token}` } }) : 
+      ({ headers: {} })
     }).concat(this.http);
-    if(!this.schema) {
-      try {
-        this.schema = await introspectSchema(this.link);
-      } catch {
-        console.log('Unauthorized to use GitHub API.');
-        this.schema = makeExecutableSchema({ typeDefs: require('../schemas/github.schema').typeDefs, resolverValidationOptions: { requireResolversForResolveType: false } })
+    try {
+      this.schema = await introspectSchema(this.link);
+    } catch {
+      if(!this.cachedSchema) {
+        this.schema = makeExecutableSchema({ typeDefs: require('../schemas/github.schema').typeDefs, resolverValidationOptions: { requireResolversForResolveType: false } });
+        this.cachedSchema = this.schema;
+      } else {
+        this.schema = this.cachedSchema;
       }
     }
     return makeRemoteExecutableSchema({
