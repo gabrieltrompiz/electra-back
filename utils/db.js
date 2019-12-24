@@ -1,4 +1,8 @@
 const { Pool } = require('pg');
+
+/** Pool of connections using class provided by pg 
+ * @type {Pool}
+*/
 const pool = new Pool({
   database: process.env.DB_NAME,
   user: process.env.DB_USER,

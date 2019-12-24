@@ -112,6 +112,10 @@ const typeDefs = gql`
     meta: JSON
   }
 
+  type TokenPayload {
+    code: String!
+  }
+
   input RegisterInput {
     username: String!
     fullName: String!
@@ -133,6 +137,7 @@ const typeDefs = gql`
   type Mutation {
     register(user: RegisterInput!): Profile!
     login(user: LoginInput!): Profile
+    generateGitHubToken(code: String!): TokenPayload!
   }
 `
 

@@ -2,6 +2,12 @@ const pool = require('../utils/db');
 const queries = require('../utils/queries');
 const bcrypt = require('bcryptjs');
 
+/** Connects with database and fetch a whole user by their username.
+ * @async
+ * @function getUserByUsername
+ * @param {string} username - Username of the user
+ * @return {Promise} user - User retrieved from the db
+ */
 const getUserByUsername = async username => {
   const client = await pool.connect();
   const res = await client.query(queries.getUserByUsername, [username]);
@@ -17,6 +23,12 @@ const getUserByUsername = async username => {
   })
 };
 
+/** Compares an unhashed candidate password and a hashed password to check if they match 
+ * @function comparePassword
+ * @param {string} candidate - Unhashed password
+ * @param {string} hash - Hashed password
+ * @returns {boolean} isMatch - If the passwords match or not
+ */
 const comparePassword = (candidate, hash) => {
   return new Promise((res, rej) => {
     bcrypt.compare(candidate, hash, (err, isMatch) => {

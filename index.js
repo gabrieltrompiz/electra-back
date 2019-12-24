@@ -15,6 +15,7 @@ app.use(cors({
   credentials: true
 }));
 
+/** Session middleware to create and parse cookies */
 const sessionMiddleware = session({
   secret: process.env.SESS_SECRET || "not really a secret",
   resave: false,
@@ -44,13 +45,21 @@ const { mergeSchemas, makeExecutableSchema } = require('graphql-tools');
 let schemas = [];
 let gitHubSchema = null;
 let server = null;
+
+/** Subject that will be used to notify the controller to update the schema 
+ * @type {Subject} */
 const subject = new Subject();
 
-const GitHubSchemaController = require('./controllers/GitHubSchemaController');
+const GitHubSchemaController = require('./controllers/GitHubSchemaController').controller;
+/** Instance of GitHubSchemaController to manage and create GitHub schema used for stitching  */
 const controller = new GitHubSchemaController('https://api.github.com/graphql', subject);
 
+/** Pool of connections that will be shared through context to whole Apollo Server */
 const pool = require('./utils/db');
 
+/** Initialization of server, will be called by throng 
+ * @async
+ * @function start */
 const start = async () => {
   app.get('/', (req, res) => {
     res.status(200).json({
@@ -59,6 +68,9 @@ const start = async () => {
     })
   });
 
+  /** Uses the GitHub schema controller to create it and stitch it with Electra's schema 
+   * @async 
+   * @function initSchemas */
   const initSchemas = async () => {
     if(server) server.stop();
     gitHubSchema = await controller.createGHSchema('https://api.github.com/graphql', subject);

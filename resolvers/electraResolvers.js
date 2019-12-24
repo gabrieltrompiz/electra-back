@@ -1,6 +1,7 @@
 const { AuthenticationError } = require('apollo-server');
 const bcrypt = require('bcryptjs');
 const queries = require('../utils/queries');
+const fetch = require('node-fetch');
 
 const getProfile = async (parent, args, context, info) => {
   const user = context.getUser();
@@ -35,7 +36,7 @@ const register = async (parent, args, context, info) => {
   } finally {
     client.release();
   }
-}
+};
 
 const login = async (parent, args, context, info) => {
   const { username, password } = args.user;
@@ -46,7 +47,26 @@ const login = async (parent, args, context, info) => {
     context.login(user);
     return { ...user, password: undefined };
   }
-}
+};
+
+const generateGitHubToken = async (parent, { code }) => {
+  const credentials = {
+    client_id: process.env.CLIENT_ID,
+    client_secret: process.env.CLIENT_SECRET,
+    code
+  };
+  const response = await fetch(`https://github.com/login/oauth/access_token`,
+    { method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
+      body: JSON.stringify(credentials)
+    }).then(res => res.json())
+    .catch(err => { throw new AuthenticationError('Invalid GitHub credentials.') })
+  if(!response.access_token) throw new AuthenticationError('Invalid token or expired.')
+  return { code: response.access_token };
+};
 
 const resolvers = {
   Query: {
@@ -54,7 +74,8 @@ const resolvers = {
   },
   Mutation: {
     register,
-    login
+    login,
+    generateGitHubToken
   }
 };
 
