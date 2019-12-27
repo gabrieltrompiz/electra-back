@@ -1,9 +1,9 @@
 const { AuthenticationError } = require('apollo-server');
 const bcrypt = require('bcryptjs');
-const queries = require('../utils/queries');
+const userHelper = require('../helpers/user');
 const fetch = require('node-fetch');
-
-const getProfile = async (parent, args, context, info) => {
+/** Query that returns the logged in profile */
+const getProfile = async (_, __, context) => {
   const user = context.getUser();
   if(user) {
     return user;
@@ -12,33 +12,23 @@ const getProfile = async (parent, args, context, info) => {
   }
 };
 
-const register = async (parent, args, context, info) => {
-  const { pool } = context;
-  const client = await pool.connect();
+/** Mutation that registers a new user and returns it to the user */
+const register = async (_, args, context) => {
   const { user } = args;
   const salt = bcrypt.genSaltSync(10);
   user.password = bcrypt.hashSync(user.password, salt);
-  try { // TODO: Check repeated email and username
-    const res = (await client.query(queries.registerUser, [user.fullName, user.username, user.email, user.gitHubToken, user.password, user.pictureUrl])).rows[0];
-    const _user = {
-      id: res.user_id,
-      username: res.user_username,
-      fullName: res.user_fullname,
-      email: res.user_email,
-      gitHubToken: res.user_github_token,
-      pictureUrl: res.user_picture_url
-    }
+  try { 
+    const { _user } = await userHelper.register(user);
     context.login(_user);
     return _user;
   } catch(e) {
     console.error(e.stack);
     throw Error('Could not register user.');
-  } finally {
-    client.release();
   }
 };
 
-const login = async (parent, args, context, info) => {
+/** Mutation that authenticates a user */
+const login = async (_, args, context) => {
   const { username, password } = args.user;
   const { user } = await context.authenticate('graphql-local', { username, password });
   if(!user) {
@@ -49,7 +39,8 @@ const login = async (parent, args, context, info) => {
   }
 };
 
-const generateGitHubToken = async (parent, { code }) => {
+/** Mutation to generate authentication token from GitHub using code sent by client */
+const generateGitHubToken = async (_, { code }) => {
   const credentials = {
     client_id: process.env.CLIENT_ID,
     client_secret: process.env.CLIENT_SECRET,
@@ -63,14 +54,25 @@ const generateGitHubToken = async (parent, { code }) => {
       },
       body: JSON.stringify(credentials)
     }).then(res => res.json())
-    .catch(err => { throw new AuthenticationError('Invalid GitHub credentials.') })
+    .catch(() => { throw new AuthenticationError('Invalid GitHub credentials.') })
   if(!response.access_token) throw new AuthenticationError('Invalid token or expired.')
   return { code: response.access_token };
 };
 
+const getUserByEmail = async (_, { email }) => {
+  return { exists: await userHelper.checkEmail(email) }
+};
+
+const getUserByUsername = async (_, { username }) => {
+  return { exists: await userHelper.checkUsername(username) }
+};
+
+/** Object with all the resolvers, including queries and mutations */
 const resolvers = {
   Query: {
     profile: getProfile,
+    emailExists: getUserByEmail,
+    usernameExists: getUserByUsername
   },
   Mutation: {
     register,

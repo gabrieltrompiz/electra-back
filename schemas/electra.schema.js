@@ -3,8 +3,6 @@ const { gql } = require('apollo-server');
 const typeDefs = gql` 
   scalar Date
   scalar JSON
-  scalar File
-  scalar Image
 
   enum SprintStatus {
     COMPLETED
@@ -100,7 +98,7 @@ const typeDefs = gql`
     user: Profile!
     chat: Chat!
     type: MessageType!
-    file: File
+    file: String!
   }
 
   type Notification {
@@ -114,6 +112,10 @@ const typeDefs = gql`
 
   type TokenPayload {
     code: String!
+  }
+
+  type ExistsPayload {
+    exists: Boolean!
   }
 
   input RegisterInput {
@@ -132,6 +134,8 @@ const typeDefs = gql`
 
   type Query {
     profile: Profile!
+    emailExists(email: String!): ExistsPayload!
+    usernameExists(username: String!): ExistsPayload!
   }
 
   type Mutation {

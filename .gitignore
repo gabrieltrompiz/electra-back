@@ -1,3 +1,5 @@
 /node_modules
+/assets/avatars/*
+!/assets/avatars/default.png
 
 .env

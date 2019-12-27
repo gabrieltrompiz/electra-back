@@ -57,6 +57,33 @@ const controller = new GitHubSchemaController('https://api.github.com/graphql', 
 /** Pool of connections that will be shared through context to whole Apollo Server */
 const pool = require('./utils/db');
 
+const multer = require('multer');
+const fileFilter = require('./utils/fileFilter');
+const upload = multer({ storage: require('./utils/diskStorage'), fileFilter });
+const fs = require('fs');
+
+app.post('/avatar', upload.single('avatar'), (req, res) => {
+  res.status(200).json({
+    status: 200,
+    message: 'File uploaded',
+    pictureUrl: req.file.filename
+  })
+});
+
+app.get('/avatar/:hex', (req, res) => {
+  const { hex } = req.params;
+  try {
+    res.setHeader('Content-Type', 'image/png');
+    fs.createReadStream(`${process.env.STORAGE_DIR}/avatars/${hex}`).pipe(res);
+  } catch {
+    res.setHeader('ContentType', 'application/json');
+    res.status(404).json({
+      status: 404,
+      message: 'File not found'
+    })
+  }
+});
+
 /** Initialization of server, will be called by throng 
  * @async
  * @function start */

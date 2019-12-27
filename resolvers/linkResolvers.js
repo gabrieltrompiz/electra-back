@@ -1,3 +1,4 @@
+/** Creates the resolvers that will delegate mutations and queries to GitHub schema */
 const getResolvers = (schema) => ({
   resolvers: {
     Profile: {

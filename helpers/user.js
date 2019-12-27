@@ -6,11 +6,12 @@ const bcrypt = require('bcryptjs');
  * @async
  * @function getUserByUsername
  * @param {string} username - Username of the user
- * @return {Promise} user - User retrieved from the db
+ * @returns {Promise} user - User retrieved from the db
  */
 const getUserByUsername = async username => {
   const client = await pool.connect();
-  const res = await client.query(queries.getUserByUsername, [username]);
+  const res = await client.query(queries.getUserByUsername, [username])
+  .finally(() => client.release());
   if(res.rowCount === 0) return null;
   else return ({
     id: res.rows[0].user_id,
@@ -21,6 +22,53 @@ const getUserByUsername = async username => {
     password: res.rows[0].user_password,
     pictureUrl: res.rows[0].user_picture_url
   })
+};
+
+/** Checks if an user already exists with the given username
+ * @async
+ * @function checkUsername
+ * @param {string} username - Username to be checked
+ * @return {boolean} exists - True if the user exists, false if not.
+ */
+const checkUsername = async username => {
+  const client = await pool.connect();
+  const res = await client.query(queries.getUserByUsername, [username])
+  .finally(() => client.release());
+  return res.rowCount > 0;
+};
+
+/** Checks if an user already exists with the given email
+ * @async
+ * @function checkEmail
+ * @param {string} email - Email to be checked
+ * @return {boolean} exists - True if the user exists, false if not.
+ */
+const checkEmail = async email => {
+  const client = await pool.connect();
+  const res = await client.query(queries.getUserByEmail, [email])
+  .finally(() => client.release());
+  return res.rowCount > 0;
+};
+
+/** Registers a new user in the database
+ * @async
+ * @function register
+ * @param {Object} user - Contains all the data needed to register user
+ * @returns {Promise} user - User created in the database
+ */
+const register = async user => {
+  const client = await pool.connect();
+  const res = (await client.query(queries.registerUser, [user.fullName, user.username, user.email, user.gitHubToken, user.password, user.pictureUrl])).rows[0];
+  client.release();
+  const _user = {
+    id: res.user_id,
+    username: res.user_username,
+    fullName: res.user_fullname,
+    email: res.user_email,
+    gitHubToken: res.user_github_token,
+    pictureUrl: res.user_picture_url
+  };
+  return { _user };
 };
 
 /** Compares an unhashed candidate password and a hashed password to check if they match 
@@ -38,4 +86,4 @@ const comparePassword = (candidate, hash) => {
   });
 };
 
-module.exports = { getUserByUsername, comparePassword };
+module.exports = { getUserByUsername, comparePassword, register, checkEmail, checkUsername };
