@@ -9,6 +9,11 @@ const typeDefs = gql`
     IN_PROGRESS
   }
 
+  enum WorkspaceRole {
+    ADMIN
+    MEMBER
+  }
+
   enum TaskStatus {
     TODO
     IN_PROGRESS
@@ -38,13 +43,19 @@ const typeDefs = gql`
     gitHubToken: String 
     password: String
     pictureUrl: String!
+    workspaces: [Workspace]
   }
 
   type Workspace {
     id: ID! 
     name: String!
     description: String
-    members: [Profile]!
+    members: [Member]!
+  }
+
+  type Member {
+    user: Profile!
+    role: WorkspaceRole!
   }
 
   type Sprint {
@@ -132,6 +143,17 @@ const typeDefs = gql`
     password: String!
   }
 
+  input WorkspaceInput {
+    name: String!
+    description: String
+    members: [MemberInput]!
+  }
+
+  input MemberInput {
+    id: ID!
+    role: WorkspaceRole!
+  }
+
   type Query {
     profile: Profile!
     emailExists(email: String!): ExistsPayload!
@@ -142,6 +164,7 @@ const typeDefs = gql`
     register(user: RegisterInput!): Profile!
     login(user: LoginInput!): Profile
     generateGitHubToken(code: String!): TokenPayload!
+    createWorkspace(workspace: WorkspaceInput!): Workspace!
   }
 `
 

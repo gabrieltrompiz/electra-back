@@ -1,7 +1,9 @@
 const { AuthenticationError } = require('apollo-server');
 const bcrypt = require('bcryptjs');
 const userHelper = require('../helpers/user');
+const workspaceHelper = require('../helpers/workpsace');
 const fetch = require('node-fetch');
+
 /** Query that returns the logged in profile */
 const getProfile = async (_, __, context) => {
   const user = context.getUser();
@@ -13,8 +15,7 @@ const getProfile = async (_, __, context) => {
 };
 
 /** Mutation that registers a new user and returns it to the user */
-const register = async (_, args, context) => {
-  const { user } = args;
+const register = async (_, { user }, context) => {
   const salt = bcrypt.genSaltSync(10);
   user.password = bcrypt.hashSync(user.password, salt);
   try { 
@@ -54,17 +55,56 @@ const generateGitHubToken = async (_, { code }) => {
       },
       body: JSON.stringify(credentials)
     }).then(res => res.json())
-    .catch(() => { throw new AuthenticationError('Invalid GitHub credentials.') })
-  if(!response.access_token) throw new AuthenticationError('Invalid token or expired.')
+    .catch(() => { throw new AuthenticationError('Invalid GitHub credentials.') });
+  if(!response.access_token) throw new AuthenticationError('Invalid token or expired.');
   return { code: response.access_token };
 };
 
-const getUserByEmail = async (_, { email }) => {
-  return { exists: await userHelper.checkEmail(email) }
+/** Query to get an user list of workspaces */
+const getWorkspaces = async (_, __, context) => {
+  if(context.getUser()) {
+    try {
+      return await workspaceHelper.getWorkspaces(context.getUser().id);
+    } catch(e) {
+      console.log(e.stack);
+      throw Error('Could not fetch workspaces.');
+    }
+  } else {
+    return new AuthenticationError('Not logged in.')
+  }
 };
 
+const createWorkspace = async (_, { workspace }, context) => {
+  if(context.getUser()) {
+    try {
+      workspace.members.push({ id: context.getUser().id, role: 'ADMIN' });
+      return await workspaceHelper.createWorkspace(workspace);
+    } catch(e) {
+      console.log(e.stack);
+      throw Error('Could not create workspace.');
+    }
+  } else {
+    return new AuthenticationError('Not logged in.');
+  }
+};
+
+const getWorkspaceMembers = async (parent) => {
+  try {
+    return await workspaceHelper.getWorkspaceMembers(parent.id);
+  } catch(e) {
+    console.log(e.stack);
+    throw Error ('Could not get workspace members');
+  }
+}
+
+/** Returns wether an user with the email given exists or not */
+const getUserByEmail = async (_, { email }) => {
+  return { exists: await userHelper.checkEmail(email) };
+};
+
+/** Returns wether an user with the username given exists or not */
 const getUserByUsername = async (_, { username }) => {
-  return { exists: await userHelper.checkUsername(username) }
+  return { exists: await userHelper.checkUsername(username) };
 };
 
 /** Object with all the resolvers, including queries and mutations */
@@ -77,7 +117,14 @@ const resolvers = {
   Mutation: {
     register,
     login,
-    generateGitHubToken
+    generateGitHubToken,
+    createWorkspace
+  },
+  Profile: {
+    workspaces: getWorkspaces
+  },
+  Workspace: {
+    members: getWorkspaceMembers
   }
 };
 
