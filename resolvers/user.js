@@ -39,6 +39,12 @@ const login = async (_, args, context) => {
   }
 };
 
+/** Mutation that logouts user */
+const logout = async (_, __, context) => {
+  context.logout();
+  return null;
+};
+
 /** Mutation to generate authentication token from GitHub using code sent by client */
 const generateGitHubToken = async (_, { code }) => {
   const credentials = {
@@ -69,4 +75,4 @@ const getUserByUsername = async (_, { username }) => {
   return { exists: await userHelper.checkUsername(username) };
 };
 
-module.exports = { getProfile, register, login, generateGitHubToken, getUserByEmail, getUserByUsername };
+module.exports = { getProfile, register, login, generateGitHubToken, getUserByEmail, getUserByUsername , logout };

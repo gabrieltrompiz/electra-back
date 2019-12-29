@@ -163,7 +163,8 @@ const typeDefs = gql`
 
   type Mutation {
     register(user: RegisterInput!): Profile!
-    login(user: LoginInput!): Profile
+    login(user: LoginInput!): Profile,
+    logout: ID,
     generateGitHubToken(code: String!): TokenPayload!
     createWorkspace(workspace: WorkspaceInput!): Workspace!
     markNotificationAsRead(id: ID!): ID,

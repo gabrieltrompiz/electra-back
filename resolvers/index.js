@@ -14,6 +14,7 @@ const resolvers = {
   Mutation: {
     register: user.register,
     login: user.login,
+    logout: user.logout,
     generateGitHubToken: user.generateGitHubToken,
     createWorkspace: workspace.createWorkspace,
     markNotificationAsRead: notification.markAsRead,
