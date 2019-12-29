@@ -104,10 +104,10 @@ const start = async () => {
     schemas = [];
 
     const { typeDefs } = require('./schemas/electra.schema');
-    const electraResolvers = require('./resolvers/electraResolvers').resolvers;
+    const electraResolvers = require('./resolvers/index').resolvers;
 
     const { linkTypeDefs } = require('./schemas/extensions.schema');
-    const linkResolvers = require('./resolvers/linkResolvers').getResolvers(gitHubSchema);
+    const linkResolvers = require('./resolvers/gitHub').getResolvers(gitHubSchema);
 
     const electraSchema = makeExecutableSchema({
       typeDefs,

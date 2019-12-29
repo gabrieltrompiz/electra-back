@@ -1,7 +1,6 @@
 const { AuthenticationError } = require('apollo-server');
-const bcrypt = require('bcryptjs');
 const userHelper = require('../helpers/user');
-const workspaceHelper = require('../helpers/workpsace');
+const bcrypt = require('bcryptjs');
 const fetch = require('node-fetch');
 
 /** Query that returns the logged in profile */
@@ -60,43 +59,6 @@ const generateGitHubToken = async (_, { code }) => {
   return { code: response.access_token };
 };
 
-/** Query to get an user list of workspaces */
-const getWorkspaces = async (_, __, context) => {
-  if(context.getUser()) {
-    try {
-      return await workspaceHelper.getWorkspaces(context.getUser().id);
-    } catch(e) {
-      console.log(e.stack);
-      throw Error('Could not fetch workspaces.');
-    }
-  } else {
-    return new AuthenticationError('Not logged in.')
-  }
-};
-
-const createWorkspace = async (_, { workspace }, context) => {
-  if(context.getUser()) {
-    try {
-      workspace.members.push({ id: context.getUser().id, role: 'ADMIN' });
-      return await workspaceHelper.createWorkspace(workspace);
-    } catch(e) {
-      console.log(e.stack);
-      throw Error('Could not create workspace.');
-    }
-  } else {
-    return new AuthenticationError('Not logged in.');
-  }
-};
-
-const getWorkspaceMembers = async (parent) => {
-  try {
-    return await workspaceHelper.getWorkspaceMembers(parent.id);
-  } catch(e) {
-    console.log(e.stack);
-    throw Error ('Could not get workspace members');
-  }
-}
-
 /** Returns wether an user with the email given exists or not */
 const getUserByEmail = async (_, { email }) => {
   return { exists: await userHelper.checkEmail(email) };
@@ -107,25 +69,4 @@ const getUserByUsername = async (_, { username }) => {
   return { exists: await userHelper.checkUsername(username) };
 };
 
-/** Object with all the resolvers, including queries and mutations */
-const resolvers = {
-  Query: {
-    profile: getProfile,
-    emailExists: getUserByEmail,
-    usernameExists: getUserByUsername
-  },
-  Mutation: {
-    register,
-    login,
-    generateGitHubToken,
-    createWorkspace
-  },
-  Profile: {
-    workspaces: getWorkspaces
-  },
-  Workspace: {
-    members: getWorkspaceMembers
-  }
-};
-
-module.exports = { resolvers };
+module.exports = { getProfile, register, login, generateGitHubToken, getUserByEmail, getUserByUsername };

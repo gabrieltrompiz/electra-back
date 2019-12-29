@@ -1,8 +1,8 @@
 const { gql } = require('apollo-server');
 
 const typeDefs = gql` 
-  scalar Date
   scalar JSON
+  scalar Date
 
   enum SprintStatus {
     COMPLETED
@@ -44,6 +44,7 @@ const typeDefs = gql`
     password: String
     pictureUrl: String!
     workspaces: [Workspace]
+    notifications: [Notification]
   }
 
   type Workspace {
@@ -114,7 +115,7 @@ const typeDefs = gql`
 
   type Notification {
     id: ID! 
-    user: Profile!
+    receiver: ID!
     type: NotificationType!
     description: String!
     read: Boolean!
@@ -165,6 +166,8 @@ const typeDefs = gql`
     login(user: LoginInput!): Profile
     generateGitHubToken(code: String!): TokenPayload!
     createWorkspace(workspace: WorkspaceInput!): Workspace!
+    markNotificationAsRead(id: ID!): ID,
+    deleteNotification(id: ID!): ID
   }
 `
 
