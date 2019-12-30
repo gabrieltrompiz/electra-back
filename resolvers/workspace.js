@@ -56,6 +56,4 @@ const getBacklog = async (parent) => {
   }
 };
 
-// const createSprint = async ()
-
 module.exports = { getWorkspaceMembers, getWorkspaces, createWorkspace, getSprint, getBacklog };
