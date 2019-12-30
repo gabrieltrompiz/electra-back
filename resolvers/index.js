@@ -25,7 +25,9 @@ const resolvers = {
     notifications: notification.getNotifications
   },
   Workspace: {
-    members: workspace.getWorkspaceMembers
+    members: workspace.getWorkspaceMembers,
+    sprints: workspace.getSprint,
+    backlog: workspace.getBacklog
   }
 };
 

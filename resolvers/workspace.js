@@ -38,4 +38,24 @@ const getWorkspaceMembers = async (parent) => {
   }
 };
 
-module.exports = { getWorkspaceMembers, getWorkspaces, createWorkspace };
+const getSprint = async (parent) => {
+  try {
+    return await workspaceHelper.getWorkspaceSprint(parent.id);
+  } catch(e) {
+    console.log(e.stack);
+    throw Error ('Could not get workspace current sprint');
+  }
+};
+
+const getBacklog = async (parent) => {
+  try {
+    return await workspaceHelper.getWorkspaceBacklog(parent.id);
+  } catch(e) {
+    console.log(e.stack);
+    throw Error ('Could not get workspace backlog');
+  }
+};
+
+// const createSprint = async ()
+
+module.exports = { getWorkspaceMembers, getWorkspaces, createWorkspace, getSprint, getBacklog };

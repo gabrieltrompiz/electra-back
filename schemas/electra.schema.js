@@ -52,6 +52,8 @@ const typeDefs = gql`
     name: String!
     description: String
     members: [Member]!
+    backlog: [Sprint]
+    sprint: Sprint!
   }
 
   type Member {
@@ -60,8 +62,7 @@ const typeDefs = gql`
   }
 
   type Sprint {
-    id: ID! 
-    workspace: Workspace!
+    id: ID!
     title: String!
     startDate: Date!
     finishDate: Date!

@@ -87,4 +87,65 @@ const getWorkspaceMembers = async id => {
   }
 };
 
-module.exports = { createWorkspace, getWorkspaces, getWorkspaceMembers };
+const getWorkspaceSprint = async id => {
+  const client = await pool.connect();
+  try {
+    const res = (await client.query(queries.getSprintFromWorkspace, [id])).rows[0];
+    const _sprint = {
+      id: res.sprint_id,
+      title: res.sprint_title,
+      startDate: res.sprint_start_date,
+      endDate: res.sprint_finish_date
+    }
+    return { _sprint }; 
+  } catch(e) {
+    console.log(e.stack)
+  } finally {
+    client.release();
+  }
+};
+
+const getWorkspaceBacklog = async id => {
+  const client = await pool.connect();
+  try {
+    const _backlog = await client.query(queries.getBacklogFromWorkspace, [id]);
+    return _backlog.rows.map((res) => ({
+      id: res.sprint_id,
+      title: res.sprint_title,
+      startDate: res.sprint_start_date,
+      endDate: res.sprint_finish_date
+    }));
+  } catch(e) {
+    console.log(e.stack)
+  } finally {
+    client.release();
+  }
+};
+
+const sendSprintToBacklog = async id => {
+  const client = await pool.connect();
+  try {
+    await client.query(queries.sendSprintToBacklog, [id]);
+    return id;
+  } catch(e) {
+    console.log(e.stack)
+  } finally {
+    client.release();
+  }
+}
+
+const createSprint = async (workspaceId, sprint) => {
+  const client = await pool.connect();
+  try {
+    const res = await client.query(queries.createSprint, [workspaceId, sprint.title, sprint.startDate, sprint.finishDate]);
+    return res.rows.map((m) => ({
+
+    }))
+  } catch(e) {
+    console.log(e.stack)
+  } finally {
+    client.release();
+  }
+}
+
+module.exports = { createWorkspace, getWorkspaces, getWorkspaceMembers, getWorkspaceSprint, getWorkspaceBacklog, sendSprintToBacklog, createSprint };
