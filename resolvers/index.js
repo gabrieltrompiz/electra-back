@@ -1,11 +1,12 @@
 const user = require('./user');
 const workspace = require('./workspace');
 const notification = require('./notification');
-const { JSONResolver } = require('graphql-scalars');
+const { JSONResolver, DateTimeResolver } = require('graphql-scalars');
 
 /** Object with all the resolvers, including queries and mutations */
 const resolvers = {
   JSON: JSONResolver,
+  Date: DateTimeResolver,
   Query: {
     profile: user.getProfile,
     emailExists: user.getUserByEmail,
@@ -17,6 +18,8 @@ const resolvers = {
     logout: user.logout,
     generateGitHubToken: user.generateGitHubToken,
     createWorkspace: workspace.createWorkspace,
+    createSprint: workspace.createSprint,
+    sendSprintToBacklog: workspace.sendSprintToBacklog,
     markNotificationAsRead: notification.markAsRead,
     deleteNotification: notification.deleteNotification
   },

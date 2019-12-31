@@ -151,6 +151,13 @@ const typeDefs = gql`
     members: [MemberInput]!
   }
 
+  input SprintInput {
+    title: String!
+    start: Date!
+    finish: Date!
+    workspaceId: ID!
+  }
+
   input MemberInput {
     id: ID!
     role: WorkspaceRole!
@@ -168,6 +175,8 @@ const typeDefs = gql`
     logout: ID,
     generateGitHubToken(code: String!): TokenPayload!
     createWorkspace(workspace: WorkspaceInput!): Workspace!
+    createSprint(sprint: SprintInput!): Sprint!
+    sendSprintToBacklog(id: ID!): ID
     markNotificationAsRead(id: ID!): ID,
     deleteNotification(id: ID!): ID
   }

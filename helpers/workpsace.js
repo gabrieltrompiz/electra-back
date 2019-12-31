@@ -95,7 +95,8 @@ const getWorkspaceSprint = async id => {
       id: res.sprint_id,
       title: res.sprint_title,
       startDate: res.sprint_start_date,
-      endDate: res.sprint_finish_date
+      endDate: res.sprint_finish_date,
+      status: 'IN_PROGRESS'
     }
     return { _sprint }; 
   } catch(e) {
@@ -113,7 +114,8 @@ const getWorkspaceBacklog = async id => {
       id: res.sprint_id,
       title: res.sprint_title,
       startDate: res.sprint_start_date,
-      endDate: res.sprint_finish_date
+      endDate: res.sprint_finish_date,
+      status: 'COMPLETED'
     }));
   } catch(e) {
     console.log(e.stack)
@@ -134,18 +136,23 @@ const sendSprintToBacklog = async id => {
   }
 }
 
-const createSprint = async (workspaceId, sprint) => {
+const createSprint = async (sprint) => {
   const client = await pool.connect();
   try {
-    const res = await client.query(queries.createSprint, [workspaceId, sprint.title, sprint.startDate, sprint.finishDate]);
-    return res.rows.map((m) => ({
-
-    }))
+    const res = await client.query(queries.createSprint, [sprint.workspaceId, sprint.title, sprint.start, sprint.finish]);
+    return {
+      id: res.rows[0].sprint_id,
+      title: sprint.title,
+      startDate: sprint.start,
+      finishDate: sprint.finish,
+      status: 'IN_PROGRESS'
+    };
   } catch(e) {
-    console.log(e.stack)
+    console.log(e.stack);
   } finally {
     client.release();
   }
 }
 
 module.exports = { createWorkspace, getWorkspaces, getWorkspaceMembers, getWorkspaceSprint, getWorkspaceBacklog, sendSprintToBacklog, createSprint };
+

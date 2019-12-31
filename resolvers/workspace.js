@@ -38,6 +38,23 @@ const getWorkspaceMembers = async (parent) => {
   }
 };
 
+const createSprint = async (_, { sprint }) => {
+  try {
+    return await workspaceHelper.createSprint(sprint);
+  } catch(e) {
+    console.log(e.stack);
+    throw Error('Could not create sprint');
+  }
+}
+const sendSprintToBacklog = async (_, { id }) => {
+  try {
+    return await workspaceHelper.sendSprintToBacklog(id);
+  } catch(e) {
+    console.log(e.stack);
+    throw Error('Could not send sprint to backlog');
+  }
+}
+
 const getSprint = async (parent) => {
   try {
     return await workspaceHelper.getWorkspaceSprint(parent.id);
@@ -56,4 +73,4 @@ const getBacklog = async (parent) => {
   }
 };
 
-module.exports = { getWorkspaceMembers, getWorkspaces, createWorkspace, getSprint, getBacklog };
+module.exports = { getWorkspaceMembers, getWorkspaces, createWorkspace, getSprint, getBacklog, createSprint, sendSprintToBacklog };
