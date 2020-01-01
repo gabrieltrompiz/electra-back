@@ -3,7 +3,7 @@ const workspaceHelper = require('../helpers/workpsace');
 
 /** Query to get an user list of workspaces */
 const getWorkspaces = async (_, __, context) => {
-  if(context.getUser()) {
+  if(context.isAuthenticated()) {
     try {
       return await workspaceHelper.getWorkspaces(context.getUser().id);
     } catch(e) {
@@ -16,7 +16,7 @@ const getWorkspaces = async (_, __, context) => {
 };
 
 const createWorkspace = async (_, { workspace }, context) => {
-  if(context.getUser()) {
+  if(context.isAuthenticated()) {
     try {
       workspace.members.push({ id: context.getUser().id, role: 'ADMIN' });
       return await workspaceHelper.createWorkspace(workspace, context.getUser());
@@ -38,20 +38,24 @@ const getWorkspaceMembers = async (parent) => {
   }
 };
 
-const createSprint = async (_, { sprint }) => {
-  try {
-    return await workspaceHelper.createSprint(sprint);
-  } catch(e) {
-    console.log(e.stack);
-    throw Error('Could not create sprint');
+const createSprint = async (_, { sprint }, context) => {
+  if(context.isAuthenticated()) {
+    try {
+      return await workspaceHelper.createSprint(sprint);
+    } catch(e) {
+      console.log(e.stack);
+      throw Error('Could not create sprint');
+    }
   }
 }
-const sendSprintToBacklog = async (_, { id }) => {
-  try {
-    return await workspaceHelper.sendSprintToBacklog(id);
-  } catch(e) {
-    console.log(e.stack);
-    throw Error('Could not send sprint to backlog');
+const sendSprintToBacklog = async (_, { id }, context) => {
+  if(context.isAuthenticated()) {
+    try {
+      return await workspaceHelper.sendSprintToBacklog(id);
+    } catch(e) {
+      console.log(e.stack);
+      throw Error('Could not send sprint to backlog');
+    }
   }
 }
 

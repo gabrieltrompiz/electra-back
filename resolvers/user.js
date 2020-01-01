@@ -5,9 +5,8 @@ const fetch = require('node-fetch');
 
 /** Query that returns the logged in profile */
 const getProfile = async (_, __, context) => {
-  const user = context.getUser();
-  if(user) {
-    return user;
+  if(context.isAuthenticated()) {
+    return context.getUser();
   } else {
     return new AuthenticationError('Not logged in.')
   }

@@ -3,7 +3,7 @@ const notificationHelper = require('../helpers/notification');
 
 /** Query to get logged user notifications */
 const getNotifications = async (_, __, context) => {
-  if(context.getUser()) {
+  if(context.isAuthenticated()) {
     try {
       return await notificationHelper.getNotifications(context.getUser().id);
     } catch(e) {
@@ -17,7 +17,7 @@ const getNotifications = async (_, __, context) => {
 
 /** Mutation to mark a notification as read */
 const markAsRead = async(_, { id }, context) => {
-  if(context.getUser()) {
+  if(context.isAuthenticated()) {
     try {
       return await notificationHelper.markAsRead(id, context.getUser().id);
     } catch(e) {
@@ -31,7 +31,7 @@ const markAsRead = async(_, { id }, context) => {
 
 /** Mutation to delete notification */
 const deleteNotification = async (_, { id }, context) => {
-  if(context.getUser()) {
+  if(context.isAuthenticated()) {
     try {
       return await notificationHelper.deleteNotification(id, context.getUser().id);
     } catch(e) {
