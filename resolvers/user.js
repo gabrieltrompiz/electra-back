@@ -1,15 +1,10 @@
-const { AuthenticationError } = require('apollo-server');
 const userHelper = require('../helpers/user');
 const bcrypt = require('bcryptjs');
 const fetch = require('node-fetch');
 
 /** Query that returns the logged in profile */
 const getProfile = async (_, __, context) => {
-  if(context.isAuthenticated()) {
-    return context.getUser();
-  } else {
-    return new AuthenticationError('Not logged in.')
-  }
+  return context.getUser();
 };
 
 /** Mutation that registers a new user and returns it to the user */
