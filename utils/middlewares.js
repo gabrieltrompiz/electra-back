@@ -20,15 +20,15 @@ const isAuthenticated = (parent, args, context, info) => {
  * @param {Function} resolver - Resolver that will be called after middlewares
  * @returns {Promise} result - A promise that resolves to the value returned by the resolver 
  */
-const use = async ([parent, args, context, info], ...functions) => {
+const applyMiddleware = (...middlewares) => (resolver) => async (parent, args, context, info) => {
   try {
-    const result = await Promise.all(functions.map(async (fn) => 
+    await Promise.all(middlewares.map(async (fn) => 
       fn(parent, args, context, info)
     ));
-    return result[result.length - 1];
+    return await resolver(parent, args, context, info);
   } catch(e) {
     return e;
   }
 };
 
-module.exports = { isAuthenticated, use };
+module.exports = { isAuthenticated, applyMiddleware };
