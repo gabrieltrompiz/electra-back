@@ -1,6 +1,5 @@
 const { AuthenticationError } = require('apollo-server');
-const { Observable, of } = require('rxjs');
-const { map } = require('rxjs/operators');
+const Promise = require("bluebird");
 
 /** Checks wether the user is authenticated or not
  * @function isAuthenticated
@@ -15,17 +14,15 @@ const isAuthenticated = (parent, args, context, info) => {
 /** Chains all functions one by one so the middlewares get applied one by one
  * @async
  * @function use
- * @param {Array} args - Arguments that GraphQL sends to resolvers
- * @param {Array} functions - Middlewares that will be applied before the resolver
+ * @param {Array} middlewares - Middlewares that will be applied before the resolver
  * @param {Function} resolver - Resolver that will be called after middlewares
  * @returns {Promise} result - A promise that resolves to the value returned by the resolver 
  */
 const applyMiddleware = (...middlewares) => (resolver) => async (parent, args, context, info) => {
+  middlewares.push(resolver);
   try {
-    await Promise.all(middlewares.map(async (fn) => 
-      fn(parent, args, context, info)
-    ));
-    return await resolver(parent, args, context, info);
+    const result = await Promise.mapSeries(middlewares, (fn) => fn(parent, args, context, info));
+    return result[result.length - 1];
   } catch(e) {
     return e;
   }
