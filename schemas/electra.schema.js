@@ -53,7 +53,7 @@ const typeDefs = gql`
     description: String
     members: [Member]!
     backlog: [Sprint]
-    sprint: Sprint!
+    sprint: Sprint
   }
 
   type Member {
@@ -175,7 +175,7 @@ const typeDefs = gql`
     logout: ID,
     generateGitHubToken(code: String!): TokenPayload!
     createWorkspace(workspace: WorkspaceInput!): Workspace!
-    createSprint(sprint: SprintInput!): Sprint!
+    createSprint(sprint: SprintInput!): Sprint
     sendSprintToBacklog(id: ID!): ID
     markNotificationAsRead(id: ID!): ID,
     deleteNotification(id: ID!): ID

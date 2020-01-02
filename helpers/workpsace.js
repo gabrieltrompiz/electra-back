@@ -91,14 +91,14 @@ const getWorkspaceSprint = async id => {
   const client = await pool.connect();
   try {
     const res = (await client.query(queries.getSprintFromWorkspace, [id])).rows[0];
-    const _sprint = {
+    const _sprint = res ?  {
       id: res.sprint_id,
       title: res.sprint_title,
       startDate: res.sprint_start_date,
       endDate: res.sprint_finish_date,
       status: 'IN_PROGRESS'
-    }
-    return { _sprint }; 
+    } : null
+    return _sprint; 
   } catch(e) {
     console.log(e.stack)
   } finally {
@@ -140,13 +140,13 @@ const createSprint = async (sprint) => {
   const client = await pool.connect();
   try {
     const res = await client.query(queries.createSprint, [sprint.workspaceId, sprint.title, sprint.start, sprint.finish]);
-    return {
+    return res.rowCount > 0 ? {
       id: res.rows[0].sprint_id,
       title: sprint.title,
       startDate: sprint.start,
       finishDate: sprint.finish,
       status: 'IN_PROGRESS'
-    };
+    } : null;
   } catch(e) {
     console.log(e.stack);
   } finally {
