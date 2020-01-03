@@ -54,9 +54,6 @@ const GitHubSchemaController = require('./controllers/GitHubSchemaController').c
 /** Instance of GitHubSchemaController to manage and create GitHub schema used for stitching  */
 const controller = new GitHubSchemaController('https://api.github.com/graphql', subject);
 
-/** Pool of connections that will be shared through context to whole Apollo Server */
-const pool = require('./utils/db');
-
 const multer = require('multer');
 const fileFilter = require('./utils/fileFilter');
 const upload = multer({ storage: require('./utils/diskStorage'), fileFilter });
@@ -131,7 +128,6 @@ const start = async () => {
       tracing: true,
       context: ({ req, res }) => ({
         headers: req.headers,
-        pool,
         ...buildContext({ req, res })
       }),
       formatError: (err) => (err.message === 'Response not successful: Received status code 401' ? new AuthenticationError('GitHub token not valid.') : err)

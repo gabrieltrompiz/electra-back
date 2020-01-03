@@ -59,6 +59,16 @@ const generateGitHubToken = async (_, { code }) => {
   return { code: response.access_token };
 };
 
+/** Query to search users by email, username and full name */
+const search = async (_, { search }) => {
+  try {
+    return await userHelper.search(search);
+  } catch(e) {
+    console.log(e.stack);
+    throw Error('Could not search users.');
+  }
+};
+
 /** Returns wether an user with the email given exists or not */
 const getUserByEmail = async (_, { email }) => {
   return { exists: await userHelper.checkEmail(email) };
@@ -69,4 +79,4 @@ const getUserByUsername = async (_, { username }) => {
   return { exists: await userHelper.checkUsername(username) };
 };
 
-module.exports = { getProfile, register, login, generateGitHubToken, getUserByEmail, getUserByUsername , logout };
+module.exports = { getProfile, register, login, generateGitHubToken, getUserByEmail, getUserByUsername , logout, search };

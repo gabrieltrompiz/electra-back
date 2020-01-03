@@ -4,11 +4,13 @@ module.exports = {
   getUserByUsername: 'SELECT * FROM users WHERE user_username = $1;',
   getUserByEmail: 'SELECT * FROM users WHERE user_email = $1;',
   getUserById: 'SELECT * FROM users WHERE user_id = $1;',
+  searchUsers: 'SELECT * FROM users WHERE user_fullname ILIKE $1 OR user_email ILIKE $1 OR user_username ILIKE $1',
   /* WORKSPACES */
   createWorkspace: 'INSERT INTO workspace(workspace_name, workspace_description, workspace_repo_id) VALUES ($1, $2, $3) RETURNING workspace_id;',
   addUserToWorkspace: 'INSERT INTO user_workspace(workspace_id, user_id, type_user_workspace_id) VALUES ($1, $2, $3);',
   getWorkspacesFromUser: 'SELECT DISTINCT w.* FROM workspace w LEFT JOIN user_workspace uw ON uw.user_id = $1 ORDER BY workspace_name;',
   getUsersFromWorkspace: 'SELECT u.*, uw.type_user_workspace_id FROM user_workspace uw INNER JOIN users u ON u.user_id = uw.user_id WHERE uw.workspace_id = $1',
+  /* SPRINTS */
   getSprintFromWorkspace: 'SELECT s.sprint_id, s.sprint_title, s.sprint_start_date, s.sprint_finish_date FROM sprint s INNER JOIN workspace w ON s.workspace_id = w.workspace_id WHERE s.sprint_status = TRUE AND s.workspace_id = $1;',
   getBacklogFromWorkspace: 'SELECT s.sprint_id, s.sprint_title, s.sprint_start_date, s.sprint_finish_date FROM sprint s INNER JOIN workspace w ON s.workspace_id = w.workspace_id WHERE s.sprint_status = FALSE AND s.workspace_id = $1;',
   sendSprintToBacklog: 'UPDATE sprint SET sprint_status = FALSE WHERE sprint_id = $1;',

@@ -71,6 +71,30 @@ const register = async user => {
   return { _user };
 };
 
+/** Searchs an user by their username, email or full name
+ * @async
+ * @function search
+ * @param {string} param - parameter that will be used to search coincidences
+ * @returns {Promise<Array<object>>} users that matches the param
+ */
+const search = async param => {
+  const client = await pool.connect();
+  try {
+    const _users = await client.query(queries.searchUsers, [`%${param}%`]);
+    return _users.rows.map((u) => ({
+      id: u.user_id,
+      username: u.user_username,
+      fullName: u.user_fullname,
+      email: u.user_email,
+      pictureUrl: u.user_picture_url
+    }));
+  } catch(e) {
+    console.log(e.stack);
+  } finally {
+    client.release();
+  }
+};
+
 /** Compares an unhashed candidate password and a hashed password to check if they match 
  * @function comparePassword
  * @param {string} candidate - Unhashed password
@@ -86,4 +110,4 @@ const comparePassword = (candidate, hash) => {
   });
 };
 
-module.exports = { getUserByUsername, comparePassword, register, checkEmail, checkUsername };
+module.exports = { getUserByUsername, comparePassword, register, checkEmail, checkUsername, search };

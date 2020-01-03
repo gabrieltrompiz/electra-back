@@ -1,4 +1,3 @@
-const { AuthenticationError } = require('apollo-server');
 const workspaceHelper = require('../helpers/workpsace');
 
 /** Query to get an user list of workspaces */
@@ -11,6 +10,7 @@ const getWorkspaces = async (_, __, context) => {
   }
 };
 
+/** Mutation to create a new workspace */
 const createWorkspace = async (_, { workspace }, context) => {
   try {
     workspace.members.push({ id: context.getUser().id, role: 'ADMIN' });
@@ -21,6 +21,7 @@ const createWorkspace = async (_, { workspace }, context) => {
   }
 };
 
+/** Query to get members of a workspace */
 const getWorkspaceMembers = async (parent) => {
   try {
     return await workspaceHelper.getWorkspaceMembers(parent.id);
@@ -30,7 +31,8 @@ const getWorkspaceMembers = async (parent) => {
   }
 };
 
-const createSprint = async (_, { sprint }, context) => {
+/** Mutation to create a new active sprint */
+const createSprint = async (_, { sprint }) => {
   try {
     return await workspaceHelper.createSprint(sprint);
   } catch(e) {
@@ -38,7 +40,9 @@ const createSprint = async (_, { sprint }, context) => {
     throw Error('Could not create sprint');
   }
 }
-const sendSprintToBacklog = async (_, { id }, context) => {
+
+/** Mutation to send a sprint to the backlog */
+const sendSprintToBacklog = async (_, { id }) => {
   try {
     return await workspaceHelper.sendSprintToBacklog(id);
   } catch(e) {
@@ -47,6 +51,7 @@ const sendSprintToBacklog = async (_, { id }, context) => {
   }
 }
 
+/** Query to get active sprint of a workspace */
 const getSprint = async (parent) => {
   try {
     return await workspaceHelper.getWorkspaceSprint(parent.id);
@@ -56,6 +61,7 @@ const getSprint = async (parent) => {
   }
 };
 
+/** Query to get backlog of a workspace */
 const getBacklog = async (parent) => {
   try {
     return await workspaceHelper.getWorkspaceBacklog(parent.id);

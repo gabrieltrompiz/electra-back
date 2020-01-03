@@ -45,6 +45,7 @@ const createWorkspace = async ({ name, description, repo, members }, creator) =>
 };
 
 /** Returns the workspaces the user logged in is member of 
+ * @async
  * @function getWorkspaces
  * @param {number} id - User id
  * @returns {Promise<Array<object>>} workspaces - Array of objects of workspace
@@ -66,6 +67,12 @@ const getWorkspaces = async id => {
   }
 };
 
+/** Returns an array of members that are part of an specific workspace
+ * @async
+ * @function getWorkspaceMembers
+ * @param {number} id - workspace id
+ * @returns {Promise<Array<object>>} members - array of members of the workspace
+ */
 const getWorkspaceMembers = async id => {
   const client = await pool.connect();
   try {
@@ -87,6 +94,12 @@ const getWorkspaceMembers = async id => {
   }
 };
 
+/** Returns the active sprint of an specific workspace
+ * @async
+ * @function getWorkspaceSprint
+ * @param {number} id - workspace id
+ * @returns {Promise} sprint - active sprint of the workspace
+ */
 const getWorkspaceSprint = async id => {
   const client = await pool.connect();
   try {
@@ -106,6 +119,12 @@ const getWorkspaceSprint = async id => {
   }
 };
 
+/** Returns the backlog of sprint of an specific workspace
+ * @async
+ * @function getWorkspaceBacklog
+ * @param {number} id - workspace id
+ * @returns {Promise<Array<object>>} sprints - array of sprints that are now part of the backlog
+ */
 const getWorkspaceBacklog = async id => {
   const client = await pool.connect();
   try {
@@ -124,6 +143,12 @@ const getWorkspaceBacklog = async id => {
   }
 };
 
+/** Marks the current sprint of a workspace as completed and sends it to the backlog 
+ * @async
+ * @function sendSprintToBacklog
+ * @param {number} id - sprint backlog
+ * @returns {Promise<Array<object>>} id - id of the sprint sent to the backlog
+ */
 const sendSprintToBacklog = async id => {
   const client = await pool.connect();
   try {
@@ -136,6 +161,12 @@ const sendSprintToBacklog = async id => {
   }
 }
 
+/** Creates a new active sprint in a workspace 
+ * @async
+ * @function createSprint
+ * @param {number} id - workspace id
+ * @returns {Promise} sprint - created sprint
+ */
 const createSprint = async (sprint) => {
   const client = await pool.connect();
   try {

@@ -1,4 +1,3 @@
-const { AuthenticationError } = require('apollo-server');
 const notificationHelper = require('../helpers/notification');
 
 /** Query to get logged user notifications */

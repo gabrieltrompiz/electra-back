@@ -16,7 +16,8 @@ const isAuthenticated = (parent, args, context, info) => {
  * @function use
  * @param {Array} middlewares - Middlewares that will be applied before the resolver
  * @param {Function} resolver - Resolver that will be called after middlewares
- * @returns {Promise} result - A promise that resolves to the value returned by the resolver 
+ * @param args - Args that are passed to the resolver
+ * @returns {(resolver) => (...args) => Promise} result - A promise that resolves to the value returned by the resolver 
  */
 const applyMiddleware = (...middlewares) => (resolver) => async (parent, args, context, info) => {
   middlewares.push(resolver);

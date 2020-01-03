@@ -11,7 +11,8 @@ const resolvers = {
   Query: {
     profile: applyMiddleware(isAuthenticated)(user.getProfile),
     emailExists: user.getUserByEmail,
-    usernameExists: user.getUserByUsername
+    usernameExists: user.getUserByUsername,
+    users: applyMiddleware(isAuthenticated)(user.search)
   },
   Mutation: {
     register: user.register,
