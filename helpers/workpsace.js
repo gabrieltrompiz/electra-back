@@ -186,19 +186,32 @@ const createSprint = async (sprint) => {
 const createTask = async (task) => {
   const client = await pool.connect();
   try {
+    await client.query('BEGIN');
     const status = task.status === 'TODO' ? 1 : task.status === 'IN_PROGRESS' ? 2 : 3;
     const res = await client.query(queries.createTask, [status, task.sprintId, task.name,
-      task.description, task.estimatedHours, task.issueId ? task.issueId : null ]);
+      task.description ? task.description : null, task.estimatedHours, task.issueId ? task.issueId : null ]);
+
+    let taskId = res.rows[0].task_id;
+    let members = [];
+    task.users.forEach(async uid => {
+      const user = await client.query(queries.addUserToTask, [uid, taskId, task.sprintId]);
+      members.push({ id: user.rows[0].user_id });
+    });
+    await client.query('COMMIT');
+
+    console.log('RESOLVER XD'); //aYUDa
     return {
       id: res.rows[0].task_id,
       name: task.name,
-      description: task.description,
       estimatedHours: task.estimatedHours,
       loggedHours: 0,
-      status: status
+      status: task.status,
+      description: task.description,
+      users: members
     };
   } catch(e) {
-    console.log(e.stack)
+    console.log(e.stack);
+    client.query('ROLLBACK');
   } finally {
     client.release();
   }
@@ -276,5 +289,5 @@ const createTask = async (task) => {
 //   }
 // }
 
-module.exports = { createWorkspace, getWorkspaces, getWorkspaceMembers, getWorkspaceSprint, getWorkspaceBacklog, sendSprintToBacklog, createSprint };
+module.exports = { createWorkspace, getWorkspaces, getWorkspaceMembers, getWorkspaceSprint, getWorkspaceBacklog, sendSprintToBacklog, createSprint, createTask };
 

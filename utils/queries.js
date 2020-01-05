@@ -21,7 +21,7 @@ module.exports = {
   getTask: 'SELECT * FROM task where task_id = $1;',
   getTaskList: 'SELECT * FROM task where sprint_id = $1;',
   getUsersFromTask: 'SELECT u.user_id, u.user_fullname, u.user_username, u.user_picture_url FROM users u INNER JOIN user_task ut ON ut.user_id = u.user_id WHERE task_id = $1;',
-  addUserToTask: 'INSERT INTO user_task (user_id, task_id) SELECT $1, $2 WHERE EXISTS (SELECT 1 FROM user_workspace WHERE workspace_id = $3 AND user_id = $1);',
+  addUserToTask: 'INSERT INTO user_task (user_id, task_id) SELECT $1, $2 WHERE EXISTS (SELECT 1 FROM user_workspace WHERE user_id = $1 AND workspace_id IN (SELECT workspace_id FROM sprint WHERE sprint_id = $3)) RETURNING user_id;',
   removeUserFromTask: 'DELETE FROM user_task WHERE user_id = $1;',
   updateTaskStatus: 'UPDATE task SET task_status_id = $1 WHERE task_id = $2;',
   updateTaskHours: 'UPDATE task SET task_logged_hours = task_logged_hours + $1 WHERE task_id = $2;',

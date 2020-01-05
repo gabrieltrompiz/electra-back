@@ -73,10 +73,10 @@ const typeDefs = gql`
   type Task {
     id: ID! 
     name: String!
-    description: String
     estimatedHours: Int!
     loggedHours: Int!
     status: TaskStatus!
+    description: String
     comments: [Comment]
     subtasks: [SubTask]
     users: [Profile]
@@ -89,7 +89,7 @@ const typeDefs = gql`
     description: String
     estimatedHours: PosInt
     issueId: ID,
-    users: [ID]
+    users: [ID]!
   }
 
   type SubTask {
@@ -194,9 +194,9 @@ const typeDefs = gql`
     createSprint(sprint: SprintInput!): Sprint
     sendSprintToBacklog(id: ID!): ID
     
-    createTask(task: TaskInput): Task!
-    addUserTask(id: ID!): Task
-    removeUserTask(id: ID): ID
+    createTask(task: TaskInput!): Task!
+    addUserTask(id: ID!): ID
+    removeUserTask(id: ID!): ID
     updateTaskStatus(id: ID!): TaskStatus
     updateTaskHours(id: ID!, hours: Int): ID
     deleteTask(id: ID!): ID
