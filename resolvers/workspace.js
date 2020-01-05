@@ -71,4 +71,69 @@ const getBacklog = async (parent) => {
   }
 };
 
-module.exports = { getWorkspaceMembers, getWorkspaces, createWorkspace, getSprint, getBacklog, createSprint, sendSprintToBacklog };
+const createTask = async (_, { task }) => {
+  try {
+    return await workspaceHelper.createTask(task);
+  } catch(e) {
+    console.log(e.stack);
+    throw Error('Could not create task');
+  }
+}
+
+const updateTaskStatus = async (_, { id }) => {
+  try {
+    return await workspaceHelper.updateTaskStatus(id);
+  } catch(e) {
+    console.log(e.stack);
+    throw Error('Could not update task status');
+  }
+}
+
+const updateTaskHours = async (_, { id, hours }) => {
+  try {
+    return await workspaceHelper.updateTaskHours(id, hours);
+  } catch(e) {
+    console.log(e.stack);
+    throw Error('Could not submit updated hours');
+  }
+}
+
+const deleteTask = async (_, { id }) => {
+  try {
+    return await workspaceHelper.deleteTask(id);
+  } catch(e) {
+    console.log(e.stack);
+    throw Error('Could not delete task');
+  }
+}
+
+const getTasks = async (parent) => {
+  try {
+    return await workspaceHelper.getTasks(parent.id);
+  } catch(e) {
+    console.log(e.stack);
+    throw Error('Could not get tasks');
+  }
+}
+
+const addUserTask = async (_, { id }) => {
+  try {
+    return await workspaceHelper.addUserTask(id);
+  } catch(e) {
+    console.log(e.stack);
+    throw Error('Could not add user');
+  }
+}
+
+const removeUserTask = async (_, { id }) => {
+  try {
+    return await workspaceHelper.removeUserTask(id);
+  } catch(e) {
+    console.log(e.stack);
+    throw Error('Could not remove user');
+  }
+}
+
+module.exports = { getWorkspaceMembers, getWorkspaces, createWorkspace, getSprint, getBacklog,
+  createSprint, sendSprintToBacklog, createTask, updateTaskHours, updateTaskStatus, deleteTask,
+  getTasks, addUserTask, removeUserTask };

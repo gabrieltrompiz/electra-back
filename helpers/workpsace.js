@@ -185,5 +185,98 @@ const createSprint = async (sprint) => {
   }
 }
 
+const createTask = async (task) => {
+  const client = await pool.connect();
+  try {
+    const status = task.status === 'TODO' ? 1 : task.status === 'IN_PROGRESS' ? 2 : 3;
+    const res = await client.query(queries.createTask, [status, task.sprintId, task.name,
+      task.description, task.estimatedHours, task.issueId ? task.issueId : null ]);
+    return {
+      id: res.rows[0].task_id,
+      name: task.name,
+      description: task.description,
+      estimatedHours: task.estimatedHours,
+      loggedHours: 0,
+      status: status
+    };
+  } catch(e) {
+    console.log(e.stack)
+  } finally {
+    client.release();
+  }
+}
+
+// const sendSprintToBacklog = async id => {
+//   const client = await pool.connect();
+//   try {
+//     await client.query(queries.sendSprintToBacklog, [id]);
+//     return id;
+//   } catch(e) {
+//     console.log(e.stack)
+//   } finally {
+//     client.release();
+//   }
+// }
+
+// const sendSprintToBacklog = async id => {
+//   const client = await pool.connect();
+//   try {
+//     await client.query(queries.sendSprintToBacklog, [id]);
+//     return id;
+//   } catch(e) {
+//     console.log(e.stack)
+//   } finally {
+//     client.release();
+//   }
+// }
+
+// const sendSprintToBacklog = async id => {
+//   const client = await pool.connect();
+//   try {
+//     await client.query(queries.sendSprintToBacklog, [id]);
+//     return id;
+//   } catch(e) {
+//     console.log(e.stack)
+//   } finally {
+//     client.release();
+//   }
+// }
+
+// const sendSprintToBacklog = async id => {
+//   const client = await pool.connect();
+//   try {
+//     await client.query(queries.sendSprintToBacklog, [id]);
+//     return id;
+//   } catch(e) {
+//     console.log(e.stack)
+//   } finally {
+//     client.release();
+//   }
+// }
+
+// const sendSprintToBacklog = async id => {
+//   const client = await pool.connect();
+//   try {
+//     await client.query(queries.sendSprintToBacklog, [id]);
+//     return id;
+//   } catch(e) {
+//     console.log(e.stack)
+//   } finally {
+//     client.release();
+//   }
+// }
+
+// const sendSprintToBacklog = async id => {
+//   const client = await pool.connect();
+//   try {
+//     await client.query(queries.sendSprintToBacklog, [id]);
+//     return id;
+//   } catch(e) {
+//     console.log(e.stack)
+//   } finally {
+//     client.release();
+//   }
+// }
+
 module.exports = { createWorkspace, getWorkspaces, getWorkspaceMembers, getWorkspaceSprint, getWorkspaceBacklog, sendSprintToBacklog, createSprint };
 

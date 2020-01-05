@@ -72,14 +72,23 @@ const typeDefs = gql`
   type Task {
     id: ID! 
     name: String!
-    description: String!
-    estimatedHours: Int
-    loggedHours: Int
-    remainingHours: Int
+    description: String
+    estimatedHours: Int!
+    loggedHours: Int!
     status: TaskStatus!
     comments: [Comment]
     subtasks: [SubTask]
-    user: Profile
+    users: [Profile]
+  }
+
+  input TaskInput {
+    sprintId: ID!
+    status: TaskStatus!
+    name: String!
+    description: String
+    estimatedHours: PosInt
+    issueId: ID,
+    users: [ID]
   }
 
   type SubTask {
@@ -172,13 +181,24 @@ const typeDefs = gql`
 
   type Mutation {
     register(user: RegisterInput!): Profile!
-    login(user: LoginInput!): Profile,
-    logout: ID,
+    login(user: LoginInput!): Profile
+    logout: ID
+
     generateGitHubToken(code: String!): TokenPayload!
+    
     createWorkspace(workspace: WorkspaceInput!): Workspace!
+
     createSprint(sprint: SprintInput!): Sprint
     sendSprintToBacklog(id: ID!): ID
-    markNotificationAsRead(id: ID!): ID,
+    
+    createTask(task: TaskInput): Task!
+    addUserTask(id: ID!)
+    removeUserTask(id: ID)
+    updateTaskStatus(id: ID!) TaskStatus
+    updateTaskHours(id: ID!, hours: Int) ID
+    deleteTask(id: ID!) ID
+    
+    markNotificationAsRead(id: ID!): ID
     deleteNotification(id: ID!): ID
   }
 `
