@@ -6,11 +6,11 @@ const queries = require('../utils/queries');
  * @param {object} workspace - Workspace data needed to create workspace
  * @returns {Promise<object>} workspace - Object of workspace
  */
-const createWorkspace = async ({ name, description, repo, members }, creator) => {
+const createWorkspace = async ({ name, description, repoOwner, repoName, members }, creator) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
-    const result = await client.query(queries.createWorkspace, [name, description, repo]);
+    const result = await client.query(queries.createWorkspace, [name, description, repoOwner, repoName]);
     const id = result.rows[0].workspace_id;
     members.forEach(async (m) => {
       if(m.id === creator.id) {
@@ -22,7 +22,6 @@ const createWorkspace = async ({ name, description, repo, members }, creator) =>
             id,
             name,
             description, 
-            repo
           },
           sender: creator
         }
@@ -33,8 +32,7 @@ const createWorkspace = async ({ name, description, repo, members }, creator) =>
     return {
       id,
       name,
-      description,
-      repo
+      description
     };
   } catch(e) {
     console.log(e.stack);

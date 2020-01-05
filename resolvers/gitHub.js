@@ -1,10 +1,13 @@
+const pool = require('../utils/db');
+const queries = require('../utils/queries');
+
 /** Creates the resolvers that will delegate mutations and queries to GitHub schema */
 const getResolvers = (schema) => ({
   resolvers: {
     Profile: {
       gitHubUser: {
-        resolve(parent, args, context, info) {
-          return context.getUser().gitHubToken ? 
+        resolve: (parent, args, context, info) => {
+          return context.getUser() ? context.getUser().gitHubUser ? 
           info.mergeInfo.delegateToSchema({
             schema,
             operation: 'query',
@@ -12,17 +15,30 @@ const getResolvers = (schema) => ({
             args: {},
             context,
             info
-          }) : null;
+          }) : null : null;
         }
       }
     }, 
     Workspace: {
       repo: {
-        resolve(parent, args, context, info) {
+        resolve: async (parent, args, context, info) => {
+          if(info.variableValues.workspace) {
+            args = {
+              name: info.variableValues.workspace.repoName,
+              owner: info.variableValues.workspace.repoOwner
+            };
+          } else {
+            const client = await pool.connect();
+            const result = (await client.query(queries.getRepoData, [parent.id])).rows[0];
+            args = {
+              name: result.workspace_repo_name,
+              owner: result.workspace_repo_owner
+            };
+          }
           return info.mergeInfo.delegateToSchema({
             schema, 
             operation: 'query',
-            fieldName: 'repo', // TODO: cambiar
+            fieldName: 'repository',
             args,
             context,
             info

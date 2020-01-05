@@ -3,6 +3,7 @@ const { gql } = require('apollo-server');
 const typeDefs = gql` 
   scalar JSON
   scalar Date
+  scalar PosInt
 
   enum SprintStatus {
     COMPLETED
@@ -158,6 +159,8 @@ const typeDefs = gql`
     name: String!
     description: String
     members: [MemberInput]!
+    repoOwner: String
+    repoName: String
   }
 
   input SprintInput {
@@ -192,11 +195,11 @@ const typeDefs = gql`
     sendSprintToBacklog(id: ID!): ID
     
     createTask(task: TaskInput): Task!
-    addUserTask(id: ID!)
-    removeUserTask(id: ID)
-    updateTaskStatus(id: ID!) TaskStatus
-    updateTaskHours(id: ID!, hours: Int) ID
-    deleteTask(id: ID!) ID
+    addUserTask(id: ID!): Task
+    removeUserTask(id: ID): ID
+    updateTaskStatus(id: ID!): TaskStatus
+    updateTaskHours(id: ID!, hours: Int): ID
+    deleteTask(id: ID!): ID
     
     markNotificationAsRead(id: ID!): ID
     deleteNotification(id: ID!): ID

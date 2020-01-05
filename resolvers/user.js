@@ -1,6 +1,7 @@
 const userHelper = require('../helpers/user');
 const bcrypt = require('bcryptjs');
 const fetch = require('node-fetch');
+const { AuthenticationError } = require('apollo-server');
 
 /** Query that returns the logged in profile */
 const getProfile = async (_, __, context) => {
