@@ -20,9 +20,8 @@ const isAuthenticated = (parent, args, context, info) => {
  * @returns {(resolver) => (...args) => Promise} result - A promise that resolves to the value returned by the resolver 
  */
 const applyMiddleware = (...middlewares) => (resolver) => async (parent, args, context, info) => {
-  middlewares.push(resolver);
   try {
-    const result = await Promise.mapSeries(middlewares, (fn) => fn(parent, args, context, info));
+    const result = await Promise.mapSeries([...middlewares, resolver], (fn) => fn(parent, args, context, info));
     return result[result.length - 1];
   } catch(e) {
     return e;

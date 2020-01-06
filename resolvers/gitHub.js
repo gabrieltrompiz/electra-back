@@ -35,14 +35,14 @@ const getResolvers = (schema) => ({
               owner: result.workspace_repo_owner
             };
           }
-          return info.mergeInfo.delegateToSchema({
+          return (args.name && args.owner) ?  info.mergeInfo.delegateToSchema({
             schema, 
             operation: 'query',
             fieldName: 'repository',
             args,
             context,
             info
-          })
+          }) : null;
         }
       }
     }
