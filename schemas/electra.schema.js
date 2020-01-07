@@ -51,8 +51,8 @@ const typeDefs = gql`
   type Workspace {
     id: ID! 
     name: String!
-    description: String
-    members: [Member]!
+    description: String!
+    members: [Member]
     backlog: [Sprint]
     sprint: Sprint
   }
@@ -190,6 +190,7 @@ const typeDefs = gql`
     generateGitHubToken(code: String!): TokenPayload!
     
     createWorkspace(workspace: WorkspaceInput!): Workspace!
+    inviteUserToWorkspace(users: [MemberInput]!, workspace: ID!): ID
 
     createSprint(sprint: SprintInput!): Sprint
     sendSprintToBacklog(id: ID!): ID

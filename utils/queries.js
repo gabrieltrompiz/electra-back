@@ -11,6 +11,7 @@ module.exports = {
   getWorkspacesFromUser: 'SELECT DISTINCT w.* FROM workspace w LEFT JOIN user_workspace uw ON uw.user_id = $1 ORDER BY workspace_name;',
   getUsersFromWorkspace: 'SELECT u.*, uw.type_user_workspace_id FROM user_workspace uw INNER JOIN users u ON u.user_id = uw.user_id WHERE uw.workspace_id = $1',
   getRepoData: 'SELECT workspace_repo_name, workspace_repo_owner FROM workspace WHERE workspace_id = $1',
+  getWorkspace: 'SELECT * FROM workspace WHERE workspace_id = $1;',
   /* SPRINTS */
   getSprintFromWorkspace: 'SELECT s.sprint_id, s.sprint_title, s.sprint_start_date, s.sprint_finish_date FROM sprint s INNER JOIN workspace w ON s.workspace_id = w.workspace_id WHERE s.sprint_status = TRUE AND s.workspace_id = $1;',
   getBacklogFromWorkspace: 'SELECT s.sprint_id, s.sprint_title, s.sprint_start_date, s.sprint_finish_date FROM sprint s INNER JOIN workspace w ON s.workspace_id = w.workspace_id WHERE s.sprint_status = FALSE AND s.workspace_id = $1;',
@@ -20,7 +21,7 @@ module.exports = {
   createTask: 'insert into task (task_status_id, sprint_id, task_name, task_description, task_estimated_hours, task_logged_hours, issue_id) values($1, $2, $3, $4, $5, 0, $6) RETURNING task_id;',
   getTask: 'SELECT * FROM task where task_id = $1;',
   getTaskList: 'SELECT * FROM task where sprint_id = $1;',
-  getUsersFromTask: 'SELECT u.user_id, u.user_fullname, u.user_username, u.user_picture_url FROM users u INNER JOIN user_task ut ON ut.user_id = u.user_id WHERE task_id = $1;',
+  getUsersFromTask: 'SELECT u.user_id, u.user_fullname, u.user_username, u.user_picture_url, u.user_email FROM users u INNER JOIN user_task ut ON ut.user_id = u.user_id WHERE task_id = $1;',
   addUserToTask: 'INSERT INTO user_task (user_id, task_id) SELECT $1, $2 WHERE EXISTS (SELECT 1 FROM user_workspace WHERE user_id = $1 AND workspace_id IN (SELECT workspace_id FROM sprint WHERE sprint_id = $3)) RETURNING user_id;',
   removeUserFromTask: 'DELETE FROM user_task WHERE user_id = $1;',
   updateTaskStatus: 'UPDATE task SET task_status_id = $1 WHERE task_id = $2;',

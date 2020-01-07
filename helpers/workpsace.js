@@ -3,7 +3,8 @@ const queries = require('../utils/queries');
 
 /** Creates a new workspace  
  * @function createWorkspace
- * @param {object} workspace - Workspace data needed to create workspace
+ * @param {Object} workspace - Workspace data needed to create workspace
+ * @param {creator} - User owner of the workspace
  * @returns {Promise<object>} workspace - Object of workspace
  */
 const createWorkspace = async ({ name, description, repoOwner, repoName, members }, creator) => {
@@ -21,9 +22,10 @@ const createWorkspace = async ({ name, description, repoOwner, repoName, members
           workspace: {
             id,
             name,
-            description, 
+            description
           },
-          sender: creator
+          sender: creator,
+          role: m.role
         }
         await client.query(queries.sendInvitation, [m.id, desc, meta]);
       }
@@ -92,202 +94,39 @@ const getWorkspaceMembers = async id => {
   }
 };
 
-/** Returns the active sprint of an specific workspace
+/** Sends invitations to users to join a workspace
  * @async
- * @function getWorkspaceSprint
- * @param {number} id - workspace id
- * @returns {Promise} sprint - active sprint of the workspace
+ * @function inviteUserToWorkspace
+ * @param {Array} users - List of users to send notification
+ * @param {workspaceId} - Workspace Id
+ * @param {creator} - User owner or admin of the workspace
+ * @returns {Promise<Array<object>>} members - array of members of the workspace
  */
-const getWorkspaceSprint = async id => {
+const inviteUserToWorkspace = async (users, workspaceId, creator) => {
   const client = await pool.connect();
   try {
-    const res = (await client.query(queries.getSprintFromWorkspace, [id])).rows[0];
-    const _sprint = res ?  {
-      id: res.sprint_id,
-      title: res.sprint_title,
-      startDate: res.sprint_start_date,
-      endDate: res.sprint_finish_date,
-      status: 'IN_PROGRESS'
-    } : null
-    return _sprint; 
-  } catch(e) {
-    console.log(e.stack)
-  } finally {
-    client.release();
-  }
-};
-
-/** Returns the backlog of sprint of an specific workspace
- * @async
- * @function getWorkspaceBacklog
- * @param {number} id - workspace id
- * @returns {Promise<Array<object>>} sprints - array of sprints that are now part of the backlog
- */
-const getWorkspaceBacklog = async id => {
-  const client = await pool.connect();
-  try {
-    const _backlog = await client.query(queries.getBacklogFromWorkspace, [id]);
-    return _backlog.rows.map((res) => ({
-      id: res.sprint_id,
-      title: res.sprint_title,
-      startDate: res.sprint_start_date,
-      endDate: res.sprint_finish_date,
-      status: 'COMPLETED'
-    }));
-  } catch(e) {
-    console.log(e.stack)
-  } finally {
-    client.release();
-  }
-};
-
-/** Marks the current sprint of a workspace as completed and sends it to the backlog 
- * @async
- * @function sendSprintToBacklog
- * @param {number} id - sprint backlog
- * @returns {Promise<Array<object>>} id - id of the sprint sent to the backlog
- */
-const sendSprintToBacklog = async id => {
-  const client = await pool.connect();
-  try {
-    await client.query(queries.sendSprintToBacklog, [id]);
-    return id;
-  } catch(e) {
-    console.log(e.stack)
-  } finally {
-    client.release();
-  }
-}
-
-/** Creates a new active sprint in a workspace 
- * @async
- * @function createSprint
- * @param {number} id - workspace id
- * @returns {Promise} sprint - created sprint
- */
-const createSprint = async (sprint) => {
-  const client = await pool.connect();
-  try {
-    const res = await client.query(queries.createSprint, [sprint.workspaceId, sprint.title, sprint.start, sprint.finish]);
-    return res.rowCount > 0 ? {
-      id: res.rows[0].sprint_id,
-      title: sprint.title,
-      startDate: sprint.start,
-      finishDate: sprint.finish,
-      status: 'IN_PROGRESS'
-    } : null;
-  } catch(e) {
-    console.log(e.stack);
-  } finally {
-    client.release();
-  }
-}
-
-const createTask = async (task) => {
-  const client = await pool.connect();
-  try {
-    await client.query('BEGIN');
-    const status = task.status === 'TODO' ? 1 : task.status === 'IN_PROGRESS' ? 2 : 3;
-    const res = await client.query(queries.createTask, [status, task.sprintId, task.name,
-      task.description ? task.description : null, task.estimatedHours, task.issueId ? task.issueId : null ]);
-
-    let taskId = res.rows[0].task_id;
-    let members = [];
-    task.users.forEach(async uid => {
-      const user = await client.query(queries.addUserToTask, [uid, taskId, task.sprintId]);
-      members.push({ id: user.rows[0].user_id });
+    const workspace = (await client.query(queries.getWorkspace, [work])).rows[0];
+    users.map(async u => {
+      const desc = `${creator} invited you to join ${workspace.workspace_name}`;
+      const meta = {
+        workspace: {
+          workspace: workspace.id,
+          name: workspace.name,
+          description: workspace.description
+        },
+        sender: creator.fullName,
+        role: u.role
+      };
+      await client.query(queries.sendInvitation, [u.id, desc, meta]);
     });
-    await client.query('COMMIT');
 
-    console.log('RESOLVER XD'); //aYUDa
-    return {
-      id: res.rows[0].task_id,
-      name: task.name,
-      estimatedHours: task.estimatedHours,
-      loggedHours: 0,
-      status: task.status,
-      description: task.description,
-      users: members
-    };
+    return null;
   } catch(e) {
-    console.log(e.stack);
-    client.query('ROLLBACK');
+    console.log(e.stack)
   } finally {
     client.release();
   }
 }
 
-// const sendSprintToBacklog = async id => {
-//   const client = await pool.connect();
-//   try {
-//     await client.query(queries.sendSprintToBacklog, [id]);
-//     return id;
-//   } catch(e) {
-//     console.log(e.stack)
-//   } finally {
-//     client.release();
-//   }
-// }
-
-// const sendSprintToBacklog = async id => {
-//   const client = await pool.connect();
-//   try {
-//     await client.query(queries.sendSprintToBacklog, [id]);
-//     return id;
-//   } catch(e) {
-//     console.log(e.stack)
-//   } finally {
-//     client.release();
-//   }
-// }
-
-// const sendSprintToBacklog = async id => {
-//   const client = await pool.connect();
-//   try {
-//     await client.query(queries.sendSprintToBacklog, [id]);
-//     return id;
-//   } catch(e) {
-//     console.log(e.stack)
-//   } finally {
-//     client.release();
-//   }
-// }
-
-// const sendSprintToBacklog = async id => {
-//   const client = await pool.connect();
-//   try {
-//     await client.query(queries.sendSprintToBacklog, [id]);
-//     return id;
-//   } catch(e) {
-//     console.log(e.stack)
-//   } finally {
-//     client.release();
-//   }
-// }
-
-// const sendSprintToBacklog = async id => {
-//   const client = await pool.connect();
-//   try {
-//     await client.query(queries.sendSprintToBacklog, [id]);
-//     return id;
-//   } catch(e) {
-//     console.log(e.stack)
-//   } finally {
-//     client.release();
-//   }
-// }
-
-// const sendSprintToBacklog = async id => {
-//   const client = await pool.connect();
-//   try {
-//     await client.query(queries.sendSprintToBacklog, [id]);
-//     return id;
-//   } catch(e) {
-//     console.log(e.stack)
-//   } finally {
-//     client.release();
-//   }
-// }
-
-module.exports = { createWorkspace, getWorkspaces, getWorkspaceMembers, getWorkspaceSprint, getWorkspaceBacklog, sendSprintToBacklog, createSprint, createTask };
+module.exports = { createWorkspace, getWorkspaces, getWorkspaceMembers, inviteUserToWorkspace };
 
