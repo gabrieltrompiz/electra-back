@@ -1,11 +1,11 @@
 const pool = require('../utils/db');
 const queries = require('../utils/queries');
 
-/** Returns the active sprint of an specific workspace
+/** Creates a task and returns it
  * @async
  * @function createTask
  * @param {Object} task - data needed to create Task
- * @returns {Promise} task created
+ * @returns {Promise} task
  */
 const createTask = async (task) => {
   const client = await pool.connect();
@@ -37,11 +37,11 @@ const createTask = async (task) => {
   }
 }
 
-/** Returns the active sprint of an specific workspace
+/** Returns the members of a task
  * @async
  * @function getTaskMembers
  * @param {number} id - task id
- * @returns {Promise} members from a task
+ * @returns {Promise} members
  */
 const getTaskMembers = async (id) => {
   const client = await pool.connect();
@@ -61,12 +61,12 @@ const getTaskMembers = async (id) => {
   }
 }
 
-/** Returns the active sprint of an specific workspace
+/** Adds a user to a task and returns its id if successful, null otherwise
  * @async
  * @function addUserTask
  * @param {number} userId - user id to be added to task
  * @param {number} taskId - task id
- * @returns {Promise} user id if user was added, null otherwise
+ * @returns {Promise} user_id
  */
 const addUserTask = async (userId, taskId) => {
   const client = await pool.connect();
@@ -81,12 +81,12 @@ const addUserTask = async (userId, taskId) => {
   }
 }
 
-/** Returns the active sprint of an specific workspace
+/** Removes an user from a task and returns its id
  * @async
  * @function removeUserTask
  * @param {number} userId - user id to be added to task
  * @param {number} taskId - task id
- * @returns {Promise} if promise resolves, always return user id to make know the user was removed
+ * @returns {Promise} user_id
  */
 const removeUserTask = async (userId, taskId) => {
   const client = await pool.connect();
@@ -100,6 +100,52 @@ const removeUserTask = async (userId, taskId) => {
   }
 }
 
+/** Updates task status and returns it
+ * @async
+ * @function updateTaskStatus
+ * @param {number} taskId - task id to update
+ * @param {number} status - status to be set
+ * @returns {Promise} status
+ */
+const updateTaskStatus = async (taskId, status) => {
+  const client = await pool.connect();
+  try {
+    const statusId = status === 'TODO' ? 1 : status === 'IN_PROGRESS' ? 2 : 3;
+    await client.query(queries.updateTaskStatus, [statusId, taskId]);
+    return status;
+  } catch(e) {
+    console.log(e.stack);
+  } finally {
+    client.release();
+  }
+}
+
+/** If successful, returns total hours spent, null otherwise
+ * @async
+ * @function updateTaskHours
+ * @param {number} taskId - task id
+ * @param {number} hours - hours to aad to the task
+ * @returns {Promise} hours
+ */
+const updateTaskHours = async (taskId, hours) => {
+  const client = await pool.connect();
+  try {
+    const res = await client.query(queries.updateTaskHours, [hours, taskId]);
+    console.log(res.rows[0])
+    return res.rows[0].hours;
+  } catch(e) {
+    console.log(e.stack);
+  } finally {
+    client.release();
+  }
+}
+
+/** Returns task id and deletes it if exists
+ * @async
+ * @function updateTaskHours
+ * @param {number} id - task id
+ * @returns {Promise} task id
+ */
 const deleteTask = async (id) => {
   const client = await pool.connect();
   try {
@@ -116,4 +162,4 @@ const deleteTask = async (id) => {
   }
 }
 
-module.exports = { createTask, getTaskMembers, deleteTask, addUserTask, removeUserTask };
+module.exports = { createTask, getTaskMembers, deleteTask, addUserTask, removeUserTask, updateTaskStatus, updateTaskHours };

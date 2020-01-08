@@ -203,8 +203,8 @@ const typeDefs = gql`
     createTask(task: TaskInput!): Task!
     addUserTask(input: UserTaskInput!): ID
     removeUserTask(input: UserTaskInput!): ID
-    updateTaskStatus(id: ID!): TaskStatus
-    updateTaskHours(id: ID!, hours: Int): ID
+    updateTaskStatus(taskId: ID!, status: TaskStatus!): TaskStatus
+    updateTaskHours(taskId: ID!, hours: Int!): Int
     deleteTask(id: ID!): ID
     
     markNotificationAsRead(id: ID!): ID

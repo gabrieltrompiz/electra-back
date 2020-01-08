@@ -21,9 +21,9 @@ const getTaskMembers = async (parent) => {
 }
 
 /** Mutation to change task status */
-const updateTaskStatus = async (_, { id }) => {
+const updateTaskStatus = async (_, { taskId, status }) => {
   try {
-    return await taskHelper.updateTaskStatus(id);
+    return await taskHelper.updateTaskStatus(taskId, status);
   } catch(e) {
     console.log(e.stack);
     throw Error('Could not update task status');
@@ -31,9 +31,9 @@ const updateTaskStatus = async (_, { id }) => {
 }
 
 /** Mutation to update hours spent in a Task */
-const updateTaskHours = async (_, { id, hours }) => {
+const updateTaskHours = async (_, { taskId, hours }) => {
   try {
-    return await taskHelper.updateTaskHours(id, hours);
+    return await taskHelper.updateTaskHours(taskId, hours);
   } catch(e) {
     console.log(e.stack);
     throw Error('Could not submit updated hours');

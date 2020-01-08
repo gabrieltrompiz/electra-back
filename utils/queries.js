@@ -25,7 +25,7 @@ module.exports = {
   addUserToTask: 'INSERT INTO user_task (user_id, task_id) SELECT $1, $2 WHERE EXISTS (SELECT 1 FROM user_workspace WHERE user_id = $1 AND workspace_id IN (SELECT workspace_id FROM sprint WHERE sprint_id IN (SELECT sprint_id FROM task WHERE task_id = $2))) RETURNING user_id;',
   removeUserFromTask: 'DELETE FROM user_task WHERE user_id = $1 AND task_id = $2;',
   updateTaskStatus: 'UPDATE task SET task_status_id = $1 WHERE task_id = $2;',
-  updateTaskHours: 'UPDATE task SET task_logged_hours = task_logged_hours + $1 WHERE task_id = $2;',
+  updateTaskHours: 'UPDATE task SET task_logged_hours = task_logged_hours + $1 WHERE task_id = $2 RETURNING task_logged_hours AS hours;',
   removeAllUsersTask: 'DELETE FROM user_task WHERE task_id = $1;',
   deleteTask: 'DELETE FROM task WHERE task_id = $1;',
   /* NOTIFICATIONS */
