@@ -150,6 +150,13 @@ const typeDefs = gql`
     pictureUrl: String
   }
 
+  input EditProfileInput {
+    fullName: String
+    email: String
+    gitHubToken: String
+    pictureUrl: String
+  }
+
   input LoginInput {
     username: String!
     password: String!
@@ -191,6 +198,7 @@ const typeDefs = gql`
     register(user: RegisterInput!): Profile!
     login(user: LoginInput!): Profile
     logout: ID
+    editProfile(profile: EditProfileInput): Profile!
 
     generateGitHubToken(code: String!): TokenPayload!
     

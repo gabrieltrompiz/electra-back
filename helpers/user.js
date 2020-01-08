@@ -95,6 +95,31 @@ const search = async (param, id) => {
   }
 };
 
+/** Edits user profile with specified values and return modified profile
+ * @function comparePassword
+ * @param {Object} profile - User data
+ * @returns {Promise} Profile
+ */
+const editProfile = async ({ fullName, email, gitHubToken, pictureUrl }, userId) => {
+  const client = await pool.connect();
+  try {
+    const res = (await client.query(queries.editProfile, [fullName, email, gitHubToken || '', pictureUrl || '', userId])).rows[0];
+    
+    return {
+      id: userId,
+      username: res.user_username,
+      fullName,
+      email,
+      gitHubToken: gitHubToken || '',
+      pictureUrl: pictureUrl || ''
+    };
+  } catch(e) {
+    console.log(e.stack);
+  } finally {
+    client.release();
+  }
+}
+
 /** Compares an unhashed candidate password and a hashed password to check if they match 
  * @function comparePassword
  * @param {string} candidate - Unhashed password
@@ -110,4 +135,4 @@ const comparePassword = (candidate, hash) => {
   });
 };
 
-module.exports = { getUserByUsername, comparePassword, register, checkEmail, checkUsername, search };
+module.exports = { getUserByUsername, comparePassword, register, checkEmail, checkUsername, search, editProfile };

@@ -1,6 +1,7 @@
 module.exports = {
   /* USERS */
   registerUser: 'INSERT INTO users(user_fullname, user_username, user_email, user_github_token, user_password, user_picture_url) VALUES($1, $2, $3, $4, $5, $6) RETURNING *;',
+  editProfile: 'UPDATE users SET user_fullname = $1, user_email = $2, user_github_token = $3, user_picture_url = $4 WHERE user_id = $5 RETURNING *;',
   getUserByUsername: 'SELECT * FROM users WHERE user_username = $1;',
   getUserByEmail: 'SELECT * FROM users WHERE user_email = $1;',
   getUserById: 'SELECT * FROM users WHERE user_id = $1;',

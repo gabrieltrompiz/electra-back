@@ -80,4 +80,15 @@ const getUserByUsername = async (_, { username }) => {
   return { exists: await userHelper.checkUsername(username) };
 };
 
-module.exports = { getProfile, register, login, generateGitHubToken, getUserByEmail, getUserByUsername , logout, search };
+/** Mutation to edit user profile */
+const editProfile = async (_, { profile }, context) => {
+  try {
+    if(!profile.fullName || !profile.email) throw new Error('Fullname and Email cannot be null or empty');
+    return await userHelper.editProfile(profile, context.getUser().id);
+  } catch(e) {
+    console.log(e.stack);
+    throw Error('Could not Edit Profile');
+  }
+}
+
+module.exports = { getProfile, register, login, generateGitHubToken, getUserByEmail, getUserByUsername , logout, search, editProfile };
