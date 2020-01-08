@@ -5,7 +5,7 @@ const queries = require('../utils/queries');
  * @async
  * @function createTask
  * @param {Object} task - data needed to create Task
- * @returns {Promise} sprint - active sprint of the workspace
+ * @returns {Promise} task created
  */
 const createTask = async (task) => {
   const client = await pool.connect();
@@ -41,7 +41,7 @@ const createTask = async (task) => {
  * @async
  * @function getTaskMembers
  * @param {number} id - task id
- * @returns {Promise} sprint - active sprint of the workspace
+ * @returns {Promise} members from a task
  */
 const getTaskMembers = async (id) => {
   const client = await pool.connect();
@@ -61,4 +61,59 @@ const getTaskMembers = async (id) => {
   }
 }
 
-module.exports = { createTask, getTaskMembers };
+/** Returns the active sprint of an specific workspace
+ * @async
+ * @function addUserTask
+ * @param {number} userId - user id to be added to task
+ * @param {number} taskId - task id
+ * @returns {Promise} user id if user was added, null otherwise
+ */
+const addUserTask = async (userId, taskId) => {
+  const client = await pool.connect();
+  try {
+    const res = await client.query(queries.addUserToTask, [userId, taskId]);
+    console.log(res.rows[0].user_id);
+    return res.rows[0].user_id
+  } catch(e) {
+    console.log(e.stack);
+  } finally {
+    client.release();
+  }
+}
+
+/** Returns the active sprint of an specific workspace
+ * @async
+ * @function removeUserTask
+ * @param {number} userId - user id to be added to task
+ * @param {number} taskId - task id
+ * @returns {Promise} if promise resolves, always return user id to make know the user was removed
+ */
+const removeUserTask = async (userId, taskId) => {
+  const client = await pool.connect();
+  try {
+    await client.query(queries.removeUserFromTask, [userId, taskId]);
+    return userId;
+  } catch(e) {
+    console.log(e.stack);
+  } finally {
+    client.release();
+  }
+}
+
+const deleteTask = async (id) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    await client.query(queries.removeAllUsersTask, [id]);
+    await client.query(queries.deleteTask, [id]);
+    await client.query('COMMIT');
+    return id;
+  } catch(e) {
+    console.log(e.stack);
+    client.query('ROLLBACK');
+  } finally {
+    client.release();
+  }
+}
+
+module.exports = { createTask, getTaskMembers, deleteTask, addUserTask, removeUserTask };

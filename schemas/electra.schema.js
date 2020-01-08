@@ -175,6 +175,11 @@ const typeDefs = gql`
     role: WorkspaceRole!
   }
 
+  input UserTaskInput {
+    userId: ID!
+    taskId: ID!
+  }
+
   type Query {
     profile: Profile!
     emailExists(email: String!): ExistsPayload!
@@ -196,8 +201,8 @@ const typeDefs = gql`
     sendSprintToBacklog(id: ID!): ID
     
     createTask(task: TaskInput!): Task!
-    addUserTask(id: ID!): ID
-    removeUserTask(id: ID!): ID
+    addUserTask(input: UserTaskInput!): ID
+    removeUserTask(input: UserTaskInput!): ID
     updateTaskStatus(id: ID!): TaskStatus
     updateTaskHours(id: ID!, hours: Int): ID
     deleteTask(id: ID!): ID

@@ -105,7 +105,7 @@ const getWorkspaceMembers = async id => {
 const inviteUserToWorkspace = async (users, workspaceId, creator) => {
   const client = await pool.connect();
   try {
-    const workspace = (await client.query(queries.getWorkspace, [work])).rows[0];
+    const workspace = (await client.query(queries.getWorkspace, [workspaceId])).rows[0];
     users.map(async u => {
       const desc = `${creator} invited you to join ${workspace.workspace_name}`;
       const meta = {

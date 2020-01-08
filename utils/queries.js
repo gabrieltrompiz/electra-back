@@ -22,10 +22,11 @@ module.exports = {
   getTask: 'SELECT * FROM task where task_id = $1;',
   getTaskList: 'SELECT * FROM task where sprint_id = $1;',
   getUsersFromTask: 'SELECT u.user_id, u.user_fullname, u.user_username, u.user_picture_url, u.user_email FROM users u INNER JOIN user_task ut ON ut.user_id = u.user_id WHERE task_id = $1;',
-  addUserToTask: 'INSERT INTO user_task (user_id, task_id) SELECT $1, $2 WHERE EXISTS (SELECT 1 FROM user_workspace WHERE user_id = $1 AND workspace_id IN (SELECT workspace_id FROM sprint WHERE sprint_id = $3)) RETURNING user_id;',
-  removeUserFromTask: 'DELETE FROM user_task WHERE user_id = $1;',
+  addUserToTask: 'INSERT INTO user_task (user_id, task_id) SELECT $1, $2 WHERE EXISTS (SELECT 1 FROM user_workspace WHERE user_id = $1 AND workspace_id IN (SELECT workspace_id FROM sprint WHERE sprint_id IN (SELECT sprint_id FROM task WHERE task_id = $2))) RETURNING user_id;',
+  removeUserFromTask: 'DELETE FROM user_task WHERE user_id = $1 AND task_id = $2;',
   updateTaskStatus: 'UPDATE task SET task_status_id = $1 WHERE task_id = $2;',
   updateTaskHours: 'UPDATE task SET task_logged_hours = task_logged_hours + $1 WHERE task_id = $2;',
+  removeAllUsersTask: 'DELETE FROM user_task WHERE task_id = $1;',
   deleteTask: 'DELETE FROM task WHERE task_id = $1;',
   /* NOTIFICATIONS */
   sendInvitation: 'INSERT INTO notification(user_id, type_notification_id, notification_description, notification_meta, notification_read) VALUES($1, 2, $2, $3, FALSE)',

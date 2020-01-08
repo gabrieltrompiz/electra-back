@@ -61,9 +61,9 @@ const getTasks = async (parent) => {
 }
 
 /** Mutation to add user to task */
-const addUserTask = async (_, { id }) => {
+const addUserTask = async (_, { input }) => {
   try {
-    return await taskHelper.addUserTask(id);
+    return await taskHelper.addUserTask(input.userId, input.taskId);
   } catch(e) {
     console.log(e.stack);
     throw Error('Could not add user');
@@ -71,9 +71,9 @@ const addUserTask = async (_, { id }) => {
 }
 
 /** Mutation to remove user from task */
-const removeUserTask = async (_, { id }) => {
+const removeUserTask = async (_, { input }) => {
   try {
-    return await taskHelper.removeUserTask(id);
+    return await taskHelper.removeUserTask(input.userId, input.taskId);
   } catch(e) {
     console.log(e.stack);
     throw Error('Could not remove user');
