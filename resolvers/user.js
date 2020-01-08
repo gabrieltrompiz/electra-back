@@ -57,13 +57,13 @@ const generateGitHubToken = async (_, { code }) => {
     }).then(res => res.json())
     .catch(() => { throw new AuthenticationError('Invalid GitHub credentials.') });
   if(!response.access_token) throw new AuthenticationError('Invalid token or expired.');
-  return { code: response.access_token };
+  return { code: response.access_token }
 };
 
 /** Query to search users by email, username and full name */
-const search = async (_, { search }) => {
+const search = async (_, { search }, context) => {
   try {
-    return await userHelper.search(search);
+    return await userHelper.search(search, context.getUser().id);
   } catch(e) {
     console.log(e.stack);
     throw Error('Could not search users.');

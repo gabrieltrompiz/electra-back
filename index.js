@@ -71,7 +71,7 @@ app.get('/avatar/:hex', (req, res) => {
   const { hex } = req.params;
   try {
     res.setHeader('Content-Type', 'image/png');
-    fs.createReadStream(`${process.env.STORAGE_DIR}/avatars/${hex}`).pipe(res);
+    res.sendFile(`${process.env.STORAGE_DIR}/avatars/${hex}`);
   } catch {
     res.setHeader('ContentType', 'application/json');
     res.status(404).json({

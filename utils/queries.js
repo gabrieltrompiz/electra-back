@@ -4,7 +4,7 @@ module.exports = {
   getUserByUsername: 'SELECT * FROM users WHERE user_username = $1;',
   getUserByEmail: 'SELECT * FROM users WHERE user_email = $1;',
   getUserById: 'SELECT * FROM users WHERE user_id = $1;',
-  searchUsers: 'SELECT * FROM users WHERE user_fullname ILIKE $1 OR user_email ILIKE $1 OR user_username ILIKE $1',
+  searchUsers: 'SELECT * FROM users WHERE user_id != $2 AND (user_fullname ILIKE $1 OR user_email ILIKE $1 OR user_username ILIKE $1)',
   /* WORKSPACES */
   createWorkspace: 'INSERT INTO workspace(workspace_name, workspace_description, workspace_repo_owner, workspace_repo_name) VALUES ($1, $2, $3, $4) RETURNING workspace_id;',
   addUserToWorkspace: 'INSERT INTO user_workspace(workspace_id, user_id, type_user_workspace_id) VALUES ($1, $2, $3);',

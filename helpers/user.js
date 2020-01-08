@@ -77,10 +77,10 @@ const register = async user => {
  * @param {string} param - parameter that will be used to search coincidences
  * @returns {Promise<Array<object>>} users that matches the param
  */
-const search = async param => {
+const search = async (param, id) => {
   const client = await pool.connect();
   try {
-    const _users = await client.query(queries.searchUsers, [`%${param}%`]);
+    const _users = await client.query(queries.searchUsers, [`%${param}%`, id]);
     return _users.rows.map((u) => ({
       id: u.user_id,
       username: u.user_username,
