@@ -8,7 +8,7 @@ module.exports = {
   /* WORKSPACES */
   createWorkspace: 'INSERT INTO workspace(workspace_name, workspace_description, workspace_repo_owner, workspace_repo_name) VALUES ($1, $2, $3, $4) RETURNING workspace_id;',
   addUserToWorkspace: 'INSERT INTO user_workspace(workspace_id, user_id, type_user_workspace_id) VALUES ($1, $2, $3);',
-  getWorkspacesFromUser: 'SELECT DISTINCT w.* FROM workspace w LEFT JOIN user_workspace uw ON uw.user_id = $1 ORDER BY workspace_name;',
+  getWorkspacesFromUser: 'SELECT w.* FROM workspace w INNER JOIN user_workspace uw ON uw.user_id = $1 AND w.workspace_id = uw.workspace_id ORDER BY workspace_name;',
   getUsersFromWorkspace: 'SELECT u.*, uw.type_user_workspace_id FROM user_workspace uw INNER JOIN users u ON u.user_id = uw.user_id WHERE uw.workspace_id = $1',
   getRepoData: 'SELECT workspace_repo_name, workspace_repo_owner FROM workspace WHERE workspace_id = $1',
   getWorkspace: 'SELECT * FROM workspace WHERE workspace_id = $1;',
