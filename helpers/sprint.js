@@ -11,11 +11,11 @@ const getWorkspaceSprint = async id => {
   const client = await pool.connect();
   try {
     const res = (await client.query(queries.getSprintFromWorkspace, [id])).rows[0];
-    const _sprint = res ?  {
+    const _sprint = res ? {
       id: res.sprint_id,
       title: res.sprint_title,
       startDate: res.sprint_start_date,
-      endDate: res.sprint_finish_date,
+      finishDate: res.sprint_finish_date,
       status: 'IN_PROGRESS'
     } : null
     return _sprint; 
@@ -36,13 +36,14 @@ const getWorkspaceBacklog = async id => {
   const client = await pool.connect();
   try {
     const _backlog = await client.query(queries.getBacklogFromWorkspace, [id]);
-    return _backlog.rows.map((res) => ({
+    const res = _backlog.rows.map((res) => ({
       id: res.sprint_id,
       title: res.sprint_title,
       startDate: res.sprint_start_date,
-      endDate: res.sprint_finish_date,
+      finishDate: res.sprint_finish_date,
       status: 'COMPLETED'
     }));
+    return res;
   } catch(e) {
     console.log(e.stack)
   } finally {

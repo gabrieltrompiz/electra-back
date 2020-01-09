@@ -50,10 +50,10 @@ const deleteTask = async (_, { id }) => {
   }
 }
 
-/** Query to get all tasks from a workspace */
+/** Query to get all tasks from a sprint */
 const getTasks = async (parent) => {
   try {
-    return await taskHelper.getTasks(parent.id);
+    return await taskHelper.getTaskList(parent.id);
   } catch(e) {
     console.log(e.stack);
     throw Error('Could not get tasks');

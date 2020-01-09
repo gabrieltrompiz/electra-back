@@ -68,6 +68,7 @@ const typeDefs = gql`
     startDate: Date!
     finishDate: Date!
     status: SprintStatus!
+    tasks: [Task]
   }
 
   type Task {

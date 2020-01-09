@@ -162,4 +162,25 @@ const deleteTask = async (id) => {
   }
 }
 
-module.exports = { createTask, getTaskMembers, deleteTask, addUserTask, removeUserTask, updateTaskStatus, updateTaskHours };
+const getTaskList = async (sprintId) => {
+  const client = await pool.connect();
+  try {
+    console.log(sprintId);
+    const res = await client.query(queries.getTaskList, [sprintId]);
+    return res.rows.map(t => ({
+      id: t.task_id,
+      name: t.task_name,
+      estimatedHours: t.task_estimated_hours,
+      loggedHours: t.task_logged_hours,
+      status: t.task_status_id == 1 ? 'TODO' : t.status_id == 2 ? 'IN_PROGRESS' : 'DONE',
+      description: t.task_description
+    }));
+  } catch(e) {
+    console.log(e.stack);
+  } finally {
+    client.release();
+  }
+}
+
+module.exports = { createTask, getTaskMembers, deleteTask, addUserTask,
+  removeUserTask,updateTaskStatus, updateTaskHours, getTaskList };

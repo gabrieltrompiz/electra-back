@@ -45,6 +45,9 @@ const resolvers = {
     sprint: sprint.getSprint,
     backlog: sprint.getBacklog
   },
+  Sprint: {
+    tasks: task.getTasks
+  },
   Task: {
     users: task.getTaskMembers
   }
