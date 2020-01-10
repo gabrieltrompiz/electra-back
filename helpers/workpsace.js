@@ -156,13 +156,7 @@ const addUserToWorkspace = async (userId, workspaceId, role) => {
   const client = await pool.connect();
   try {
     await client.query(queries.addUserToWorkspace, [workspaceId, userId, role == 'ADMIN' ? 1 : 2]);
-    return {
-      id,
-      name,
-      description,
-      repoOwner,
-      repoName
-    }
+    return userId;
   } catch(e) {
     console.log(e.stack)
     throw Error(e);
@@ -171,4 +165,65 @@ const addUserToWorkspace = async (userId, workspaceId, role) => {
   }
 };
 
-module.exports = { createWorkspace, getWorkspaces, getWorkspaceMembers, inviteUserToWorkspace, editWorkspace, addUserToWorkspace };
+const removeUserFromWorkspace = async (userId, workspaceId) => {
+  const client = await pool.connect();
+  try {
+    await client.query(queries.removeUserFromWorkspace, [userId, workspaceId]);
+    return userId;
+  } catch(e) {
+    console.log(e.stack)
+    throw Error(e);
+  } finally {
+    client.release();
+  }
+};
+
+const exitFromWorkspace = async (userId, workspaceId) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    await client.query(queries.removeUserFromWorkspace, [userId, workspaceId]);
+    const users = await client.query(queries.getWorkspaceAdmins, [workspaceId])
+    if(users.rowCount <= 0) {
+      await client.query(queries.deleteWorkspace, [workspaceId]);
+    }
+    await client.query('COMMIT');
+    return userId;
+  } catch(e) {
+    console.log(e.stack)
+    client.query('ROLLBACK');
+    throw Error(e);
+  } finally {
+    client.release();
+  }
+};
+
+const setWorkspaceUserRole = async (userId, workspaceId, role) => {
+  const client = await pool.connect();
+  try {
+    const _role = role == 'ADMIN' ? 1 : 2;
+    await client.query(queries.setWorkspaceUserRole, [_role, userId, workspaceId]);
+    return userId;
+  } catch(e) {
+    console.log(e.stack)
+    throw Error(e);
+  } finally {
+    client.release();
+  }
+};
+
+const deleteWorkspace = async (userId, workspaceId) => {
+  const client = await pool.connect();
+  try {
+    await client.query(queries.removeUserFromWorkspace, [workspaceId, userId]);
+    return userId;
+  } catch(e) {
+    console.log(e.stack)
+    throw Error(e);
+  } finally {
+    client.release();
+  }
+};
+
+module.exports = { createWorkspace, getWorkspaces, getWorkspaceMembers,inviteUserToWorkspace,
+  editWorkspace, addUserToWorkspace, removeUserFromWorkspace, exitFromWorkspace, setWorkspaceUserRole, deleteWorkspace };

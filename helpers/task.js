@@ -17,7 +17,7 @@ const createTask = async (task) => {
 
     let taskId = res.rows[0].task_id;
     task.users.forEach(async uid => {
-      await client.query(queries.addUserToTask, [uid, taskId, task.sprintId]);
+      await client.query(queries.addUserToTask, [uid, taskId]);
     });
     await client.query('COMMIT');
 

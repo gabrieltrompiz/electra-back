@@ -59,4 +59,42 @@ const addUserToWorkspace = async (_, { input }) => {
   }
 }
 
-module.exports = { getWorkspaceMembers, getWorkspaces, createWorkspace, inviteUserToWorkspace, editWorkspace, addUserToWorkspace };
+const removeUserFromWorkspace = async (_, { userId, workspaceId }, context) => {
+  try {
+    if (context.getUser().id == userId) throw new Error();
+    return await workspaceHelper.removeUserFromWorkspace(userId, workspaceId);
+  } catch(e) {
+    console.log(e.stack);
+    throw Error('Could not remove user from Workspace');
+  }
+}
+
+const exitFromWorkspace = async (_, { workspaceId }, context) => {
+  try {
+    return await workspaceHelper.exitFromWorkspace(context.getUser().id, workspaceId);
+  } catch(e) {
+    console.log(e.stack);
+    throw Error('Could not exit from workspace');
+  }
+}
+
+const setWorkspaceUserRole = async (_, { input }) => {
+  try {
+    return await workspaceHelper.setWorkspaceUserRole(input.userId, input.workspaceId, input.role);
+  } catch(e) {
+    console.log(e.stack);
+    throw Error('Could not change user role');
+  }
+}
+
+const deleteWorkspace = async (_, { workspaceId }) => {
+  try {
+    return await workspaceHelper.deleteWorkspace(workspaceId);
+  } catch(e) {
+    console.log(e.stack);
+    throw Error('Could not delete workspace');
+  }
+}
+
+module.exports = { getWorkspaceMembers, getWorkspaces, createWorkspace, inviteUserToWorkspace,
+  editWorkspace, addUserToWorkspace, removeUserFromWorkspace, exitFromWorkspace, setWorkspaceUserRole, deleteWorkspace };

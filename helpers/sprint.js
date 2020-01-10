@@ -79,15 +79,20 @@ const createSprint = async (sprint) => {
   const client = await pool.connect();
   try {
     const res = await client.query(queries.createSprint, [sprint.workspaceId, sprint.title, sprint.startDate, sprint.finishDate]);
-    return res.rowCount > 0 ? {
-      id: res.rows[0].sprint_id,
-      title: sprint.title,
-      startDate: sprint.startDate,
-      finishDate: sprint.finishDate,
-      status: 'IN_PROGRESS'
-    } : null;
+    if(res.rowCount > 0) {
+      return {
+        id: res.rows[0].sprint_id,
+        title: sprint.title,
+        startDate: sprint.startDate,
+        finishDate: sprint.finishDate,
+        status: 'IN_PROGRESS'
+      };
+    }
+
+    throw new Error();
   } catch(e) {
     console.log(e.stack);
+    throw Error(e);
   } finally {
     client.release();
   }

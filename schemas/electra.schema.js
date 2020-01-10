@@ -77,7 +77,7 @@ const typeDefs = gql`
     estimatedHours: Int!
     loggedHours: Int!
     status: TaskStatus!
-    description: String
+    description: String!
     comments: [Comment]
     subtasks: [SubTask]
     users: [Profile]
@@ -87,7 +87,7 @@ const typeDefs = gql`
     sprintId: ID!
     status: TaskStatus!
     name: String!
-    description: String
+    description: String!
     estimatedHours: PosInt
     issueId: ID,
     users: [ID]!
@@ -96,8 +96,7 @@ const typeDefs = gql`
   type SubTask {
     id: ID! 
     task: Task!
-    description: String
-    title: String!
+    description: String!
     status: Boolean!
   }
 
@@ -196,7 +195,7 @@ const typeDefs = gql`
     taskId: ID!
   }
 
-  input AddUserWorkspaceInput {
+  input UserWorkspaceInput {
     userId: ID!
     workspaceId: ID!
     role: WorkspaceRole!
@@ -214,13 +213,16 @@ const typeDefs = gql`
     login(user: LoginInput!): Profile
     logout: ID
     editProfile(profile: EditProfileInput): Profile!
-
     generateGitHubToken(code: String!): TokenPayload!
     
     createWorkspace(workspace: WorkspaceInput!): Workspace!
     inviteUserToWorkspace(users: [MemberInput]!, workspace: ID!): ID
     editWorkspace(workspace: EditWorkspaceInput!): Workspace!
-    addUserToWorkspace(input: AddUserWorkspaceInput!): ID
+    addUserToWorkspace(input: UserWorkspaceInput!): ID
+    removeUserFromWorkspace(userId: ID!, workspaceId: ID!): ID
+    exitFromWorkspace(workspaceId: ID!): ID
+    setWorkspaceUserRole(input: UserWorkspaceInput!): ID
+    deleteWorkspace(workspaceId: ID!): ID
 
     createSprint(sprint: SprintInput!): Sprint
     sendSprintToBacklog(id: ID!): ID
