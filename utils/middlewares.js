@@ -9,6 +9,14 @@ const isAuthenticated = (parent, args, context, info) => {
   if(!context.isAuthenticated()) {
     throw new AuthenticationError('Not logged in.');
   }
+  return;
+};
+
+const isLoggedOut = (parent, args, context, info) => {
+  if(context.isAuthenticated()) {
+    throw new AuthenticationError('Already logged in.');
+  }
+  return;
 };
 
 /** Chains all functions one by one so the middlewares get applied one by one
@@ -28,4 +36,4 @@ const applyMiddleware = (...middlewares) => (resolver) => async (parent, args, c
   }
 };
 
-module.exports = { isAuthenticated, applyMiddleware };
+module.exports = { isAuthenticated, applyMiddleware, isLoggedOut };

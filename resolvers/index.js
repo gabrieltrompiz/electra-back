@@ -4,7 +4,7 @@ const sprint = require('./sprint');
 const task = require('./task');
 const notification = require('./notification');
 const { JSONResolver, DateTimeResolver, NonNegativeIntResolver } = require('graphql-scalars');
-const { isAuthenticated, applyMiddleware } = require('../utils/middlewares');
+const { isAuthenticated, isLoggedOut, applyMiddleware } = require('../utils/middlewares');
 
 /** Object with all the resolvers, including queries and mutations */
 const resolvers = {
@@ -18,8 +18,8 @@ const resolvers = {
     users: applyMiddleware(isAuthenticated)(user.search)
   },
   Mutation: {
-    register: user.register,
-    login: user.login,
+    register: applyMiddleware(isLoggedOut)(user.register),
+    login: applyMiddleware(isLoggedOut)(user.login),
     logout: applyMiddleware(isAuthenticated)(user.logout),
     editProfile: applyMiddleware(isAuthenticated)(user.editProfile),
     generateGitHubToken: user.generateGitHubToken,

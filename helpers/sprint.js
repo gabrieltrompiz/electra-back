@@ -78,12 +78,12 @@ const sendSprintToBacklog = async id => {
 const createSprint = async (sprint) => {
   const client = await pool.connect();
   try {
-    const res = await client.query(queries.createSprint, [sprint.workspaceId, sprint.title, sprint.start, sprint.finish]);
+    const res = await client.query(queries.createSprint, [sprint.workspaceId, sprint.title, sprint.startDate, sprint.finishDate]);
     return res.rowCount > 0 ? {
       id: res.rows[0].sprint_id,
       title: sprint.title,
-      startDate: sprint.start,
-      finishDate: sprint.finish,
+      startDate: sprint.startDate,
+      finishDate: sprint.finishDate,
       status: 'IN_PROGRESS'
     } : null;
   } catch(e) {

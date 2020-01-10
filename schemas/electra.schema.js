@@ -173,8 +173,8 @@ const typeDefs = gql`
 
   input SprintInput {
     title: String!
-    start: Date!
-    finish: Date!
+    startDate: Date!
+    finishDate: Date!
     workspaceId: ID!
   }
 
