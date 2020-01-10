@@ -72,7 +72,6 @@ const addUserTask = async (userId, taskId) => {
   const client = await pool.connect();
   try {
     const res = await client.query(queries.addUserToTask, [userId, taskId]);
-    console.log(res.rows[0].user_id);
     return res.rows[0].user_id
   } catch(e) {
     console.log(e.stack);
@@ -131,7 +130,6 @@ const updateTaskHours = async (taskId, hours) => {
   const client = await pool.connect();
   try {
     const res = await client.query(queries.updateTaskHours, [hours, taskId]);
-    console.log(res.rows[0])
     return res.rows[0].hours;
   } catch(e) {
     console.log(e.stack);
@@ -165,7 +163,6 @@ const deleteTask = async (id) => {
 const getTaskList = async (sprintId) => {
   const client = await pool.connect();
   try {
-    console.log(sprintId);
     const res = await client.query(queries.getTaskList, [sprintId]);
     return res.rows.map(t => ({
       id: t.task_id,

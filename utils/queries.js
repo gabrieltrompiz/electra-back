@@ -8,6 +8,7 @@ module.exports = {
   searchUsers: 'SELECT * FROM users WHERE user_id != $2 AND (user_fullname ILIKE $1 OR user_email ILIKE $1 OR user_username ILIKE $1)',
   /* WORKSPACES */
   createWorkspace: 'INSERT INTO workspace(workspace_name, workspace_description, workspace_repo_owner, workspace_repo_name) VALUES ($1, $2, $3, $4) RETURNING workspace_id;',
+  editWorkspace: 'UPDATE workspace SET workspace_name = $1, workspace_description = $2, workspace_repo_owner = $3, workspace_repo_name = $4 WHERE workspace_id = $5;',
   addUserToWorkspace: 'INSERT INTO user_workspace(workspace_id, user_id, type_user_workspace_id) VALUES ($1, $2, $3);',
   getWorkspacesFromUser: 'SELECT w.* FROM workspace w INNER JOIN user_workspace uw ON uw.user_id = $1 AND w.workspace_id = uw.workspace_id ORDER BY workspace_name;',
   getUsersFromWorkspace: 'SELECT u.*, uw.type_user_workspace_id FROM user_workspace uw INNER JOIN users u ON u.user_id = uw.user_id WHERE uw.workspace_id = $1',

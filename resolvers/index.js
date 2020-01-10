@@ -25,6 +25,8 @@ const resolvers = {
     generateGitHubToken: user.generateGitHubToken,
     createWorkspace: applyMiddleware(isAuthenticated)(workspace.createWorkspace),
     inviteUserToWorkspace: applyMiddleware(isAuthenticated)(workspace.inviteUserToWorkspace),
+    editWorkspace: applyMiddleware(isAuthenticated)(workspace.editWorkspace),
+    addUserToWorkspace: applyMiddleware(isAuthenticated)(workspace.addUserToWorkspace),
     createSprint: applyMiddleware(isAuthenticated)(sprint.createSprint),
     sendSprintToBacklog: applyMiddleware(isAuthenticated)(sprint.sendSprintToBacklog),
     createTask: applyMiddleware(isAuthenticated)(task.createTask),

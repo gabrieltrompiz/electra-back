@@ -41,4 +41,22 @@ const inviteUserToWorkspace = async (_, { users, workspace }, context) => {
   }
 }
 
-module.exports = { getWorkspaceMembers, getWorkspaces, createWorkspace, inviteUserToWorkspace };
+const editWorkspace = async (_, { workspace }) => {
+  try {
+    return await workspaceHelper.editWorkspace(workspace);
+  } catch(e) {
+    console.log(e.stack);
+    throw Error('Could not edit Workspace');
+  }
+}
+
+const addUserToWorkspace = async (_, { input }) => {
+  try {
+    return await workspaceHelper.addUserToWorkspace(input.userId, input.workspaceId, input.role);
+  } catch(e) {
+    console.log(e.stack);
+    throw Error('Could not add user to Workspace');
+  }
+}
+
+module.exports = { getWorkspaceMembers, getWorkspaces, createWorkspace, inviteUserToWorkspace, editWorkspace, addUserToWorkspace };

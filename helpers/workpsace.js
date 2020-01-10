@@ -128,5 +128,47 @@ const inviteUserToWorkspace = async (users, workspaceId, creator) => {
   }
 }
 
-module.exports = { createWorkspace, getWorkspaces, getWorkspaceMembers, inviteUserToWorkspace };
+/** Edits workspace and return its data
+ * @async
+ * @function editWorkspace
+ * @param {Object} workspace - workspace data
+ * @returns {Promise<object>} workspace
+ */
+const editWorkspace = async ({ id, name, description, repoOwner, repoName }) => {
+  const client = await pool.connect();
+  try {
+    await client.query(queries.editWorkspace, [name, description, repoOwner, repoName, id]);
+    return {
+      id,
+      name,
+      description,
+      repoOwner,
+      repoName
+    }
+  } catch(e) {
+    console.log(e.stack)
+  } finally {
+    client.release();
+  }
+};
 
+const addUserToWorkspace = async (userId, workspaceId, role) => {
+  const client = await pool.connect();
+  try {
+    await client.query(queries.addUserToWorkspace, [workspaceId, userId, role == 'ADMIN' ? 1 : 2]);
+    return {
+      id,
+      name,
+      description,
+      repoOwner,
+      repoName
+    }
+  } catch(e) {
+    console.log(e.stack)
+    throw Error(e);
+  } finally {
+    client.release();
+  }
+};
+
+module.exports = { createWorkspace, getWorkspaces, getWorkspaceMembers, inviteUserToWorkspace, editWorkspace, addUserToWorkspace };

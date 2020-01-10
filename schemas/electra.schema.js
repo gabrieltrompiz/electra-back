@@ -171,6 +171,14 @@ const typeDefs = gql`
     repoName: String
   }
 
+  input EditWorkspaceInput {
+    id: ID!
+    name: String!
+    description: String
+    repoOwner: String
+    repoName: String
+  }
+
   input SprintInput {
     title: String!
     startDate: Date!
@@ -186,6 +194,12 @@ const typeDefs = gql`
   input UserTaskInput {
     userId: ID!
     taskId: ID!
+  }
+
+  input AddUserWorkspaceInput {
+    userId: ID!
+    workspaceId: ID!
+    role: WorkspaceRole!
   }
 
   type Query {
@@ -205,6 +219,8 @@ const typeDefs = gql`
     
     createWorkspace(workspace: WorkspaceInput!): Workspace!
     inviteUserToWorkspace(users: [MemberInput]!, workspace: ID!): ID
+    editWorkspace(workspace: EditWorkspaceInput!): Workspace!
+    addUserToWorkspace(input: AddUserWorkspaceInput!): ID
 
     createSprint(sprint: SprintInput!): Sprint
     sendSprintToBacklog(id: ID!): ID
