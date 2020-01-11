@@ -169,7 +169,7 @@ const getTaskList = async (sprintId) => {
       name: t.task_name,
       estimatedHours: t.task_estimated_hours,
       loggedHours: t.task_logged_hours,
-      status: t.task_status_id == 1 ? 'TODO' : t.status_id == 2 ? 'IN_PROGRESS' : 'DONE',
+      status: t.task_status_id == 1 ? 'TODO' : t.task_status_id == 2 ? 'IN_PROGRESS' : 'DONE',
       description: t.task_description
     }));
   } catch(e) {

@@ -115,12 +115,8 @@ const editProfile = async ({ fullName, username, email, gitHubToken, pictureUrl 
     });
 
     return {
-      id: context.getUser().id,
-      username,
-      fullName,
-      email,
-      gitHubToken,
-      pictureUrl
+      ...context.getUser(),
+      password: undefined
     };
   } catch(e) {
     console.log(e.stack);
