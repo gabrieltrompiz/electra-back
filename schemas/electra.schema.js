@@ -99,6 +99,11 @@ const typeDefs = gql`
     status: Boolean!
   }
 
+  input SubTaskInput {
+    description: String!
+    taskId: ID!
+  }
+
   type Comment {
     id: ID! 
     task: Task!
@@ -232,6 +237,11 @@ const typeDefs = gql`
     updateTaskStatus(taskId: ID!, status: TaskStatus!): TaskStatus
     updateTaskHours(taskId: ID!, hours: Int!): Int
     deleteTask(id: ID!): ID
+
+    createSubTask(subTask: SubTaskInput!): SubTask!
+    editSubTask(description: String!, subTaskId: ID!): SubTask!
+    setSubTaskStatus(status: Boolean! subTaskId: ID!): SubTask!
+    deleteSubTask(subTaskId: ID!): ID
     
     markNotificationAsRead(id: ID!): ID
     deleteNotification(id: ID!): ID

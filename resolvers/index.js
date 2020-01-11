@@ -40,6 +40,10 @@ const resolvers = {
     updateTaskStatus: applyMiddleware(isAuthenticated)(task.updateTaskStatus),
     updateTaskHours: applyMiddleware(isAuthenticated)(task.updateTaskHours),
     deleteTask: applyMiddleware(isAuthenticated)(task.deleteTask),
+    createSubTask: applyMiddleware(isAuthenticated)(subtask.createSubtask),
+    editSubTask: applyMiddleware(isAuthenticated)(subtask.editSubtask),
+    setSubTaskStatus: applyMiddleware(isAuthenticated)(subtask.setStatus),
+    deleteSubTask: applyMiddleware(isAuthenticated)(subtask.deleteSubtask),
     markNotificationAsRead: applyMiddleware(isAuthenticated)(notification.markAsRead),
     deleteNotification: applyMiddleware(isAuthenticated)(notification.deleteNotification)
   },

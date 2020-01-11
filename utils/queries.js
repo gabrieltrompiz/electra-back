@@ -36,6 +36,10 @@ module.exports = {
   deleteTask: 'DELETE FROM task WHERE task_id = $1;',
   /* SUBTASKS */
   getSubtasks: 'SELECT * FROM subtask WHERE task_id = $1;',
+  createSubtask: 'INSERT INTO subtask (subtask_description, subtask_status, task_id) VALUES ($1, FALSE, $2) RETURNING *;',
+  editSubtask: 'UPDATE subtask SET subtask_description = $1 WHERE subtask_id = $2 RETURNING *;',
+  setSubtaskStatus: 'UPDATE subtask SET subtask_status = $1 WHERE subtask_id = $2 RETURNING *;',
+  deleteSubtask: 'DELETE FROM subtask WHERE subtask_id = $1;',
   /* NOTIFICATIONS */
   sendNotification: 'INSERT INTO notification(user_id, type_notification_id, notification_description, notification_meta, notification_read) VALUES($1, $4, $2, $3, FALSE)',
   getNotifications: 'SELECT * FROM notification WHERE user_id = $1;',
