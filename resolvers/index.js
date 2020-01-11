@@ -2,6 +2,7 @@ const user = require('./user');
 const workspace = require('./workspace');
 const sprint = require('./sprint');
 const task = require('./task');
+const subtask = require('./subtask');
 const notification = require('./notification');
 const { JSONResolver, DateTimeResolver, NonNegativeIntResolver } = require('graphql-scalars');
 const { isAuthenticated, isLoggedOut, applyMiddleware } = require('../utils/middlewares');
@@ -52,10 +53,11 @@ const resolvers = {
     backlog: sprint.getBacklog
   },
   Sprint: {
-    tasks: task.getTasks
+    tasks: task.getTasks,
   },
   Task: {
-    users: task.getTaskMembers
+    users: task.getTaskMembers,
+    subtasks: subtask.getSubtasks
   }
 };
 

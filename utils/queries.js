@@ -34,6 +34,8 @@ module.exports = {
   updateTaskHours: 'UPDATE task SET task_logged_hours = task_logged_hours + $1 WHERE task_id = $2 RETURNING task_logged_hours AS hours;',
   removeAllUsersTask: 'DELETE FROM user_task WHERE task_id = $1;',
   deleteTask: 'DELETE FROM task WHERE task_id = $1;',
+  /* SUBTASKS */
+  getSubtasks: 'SELECT * FROM subtask WHERE task_id = $1;',
   /* NOTIFICATIONS */
   sendNotification: 'INSERT INTO notification(user_id, type_notification_id, notification_description, notification_meta, notification_read) VALUES($1, $4, $2, $3, FALSE)',
   getNotifications: 'SELECT * FROM notification WHERE user_id = $1;',

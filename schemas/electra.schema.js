@@ -94,8 +94,7 @@ const typeDefs = gql`
   }
 
   type SubTask {
-    id: ID! 
-    task: Task!
+    id: ID!
     description: String!
     status: Boolean!
   }
