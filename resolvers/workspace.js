@@ -87,9 +87,9 @@ const setWorkspaceUserRole = async (_, { input }) => {
   }
 }
 
-const deleteWorkspace = async (_, { workspaceId }) => {
+const deleteWorkspace = async (_, { workspaceId }, context) => {
   try {
-    return await workspaceHelper.deleteWorkspace(workspaceId);
+    return await workspaceHelper.deleteWorkspace(workspaceId, context.getUser());
   } catch(e) {
     console.log(e.stack);
     throw Error('Could not delete workspace');

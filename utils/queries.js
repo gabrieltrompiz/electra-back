@@ -35,7 +35,7 @@ module.exports = {
   removeAllUsersTask: 'DELETE FROM user_task WHERE task_id = $1;',
   deleteTask: 'DELETE FROM task WHERE task_id = $1;',
   /* NOTIFICATIONS */
-  sendInvitation: 'INSERT INTO notification(user_id, type_notification_id, notification_description, notification_meta, notification_read) VALUES($1, 2, $2, $3, FALSE)',
+  sendNotification: 'INSERT INTO notification(user_id, type_notification_id, notification_description, notification_meta, notification_read) VALUES($1, $4, $2, $3, FALSE)',
   getNotifications: 'SELECT * FROM notification WHERE user_id = $1;',
   markAsRead: 'UPDATE notification SET notification_read = TRUE WHERE notification_id = $1 AND user_id = $2;',
   deleteNotification: 'DELETE FROM notification WHERE notification_id = $1 AND user_id = $2;'

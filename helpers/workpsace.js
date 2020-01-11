@@ -24,10 +24,10 @@ const createWorkspace = async ({ name, description, repoOwner, repoName, members
             name,
             description
           },
-          sender: creator,
+          sender: {...creator, password: null },
           role: m.role
         }
-        await client.query(queries.sendInvitation, [m.id, desc, meta]);
+        await client.query(queries.sendNotification, [m.id, desc, meta, 2]);
       }
     });
     await client.query('COMMIT');
@@ -114,10 +114,10 @@ const inviteUserToWorkspace = async (users, workspaceId, creator) => {
           name: workspace.name,
           description: workspace.description
         },
-        sender: creator.fullName,
+        sender: {...creator, password: null },
         role: u.role
       };
-      await client.query(queries.sendInvitation, [u.id, desc, meta]);
+      await client.query(queries.sendNotification, [u.id, desc, meta, 2]);
     });
 
     return null;
@@ -212,13 +212,35 @@ const setWorkspaceUserRole = async (userId, workspaceId, role) => {
   }
 };
 
-const deleteWorkspace = async (userId, workspaceId) => {
+const deleteWorkspace = async (workspaceId, creator) => {
   const client = await pool.connect();
   try {
-    await client.query(queries.removeUserFromWorkspace, [workspaceId, userId]);
-    return userId;
+    await client.query('BEGIN');
+    console.log(workspaceId)
+    const users = ( await client.query(queries.getUsersFromWorkspace, [workspaceId]) ).rows;
+    const w = ( await client.query(queries.getWorkspace, [workspaceId]) ).rows[0]
+    users.splice(users.findIndex(u => u.user_id == creator.id), 1);
+    console.log(users);
+    console.log(creator);
+    users.forEach(async u => {
+      const desc = `Workspace ${w.workspace_name} has been deleted!`;
+      const meta = {
+        workspace: {
+          id: w.workspace_id,
+          name: w.workspace_name,
+          description: w.workspace_description
+        },
+        sender: {...creator, password: null },
+      }
+      await client.query(queries.sendNotification, [u.user_id, desc, meta, 1]);
+    });
+    await client.query(queries.deleteWorkspace, [workspaceId]);
+    await client.query('COMMIT');
+
+    return workspaceId;
   } catch(e) {
     console.log(e.stack)
+    client.query('ROLLBACK');
     throw Error(e);
   } finally {
     client.release();
