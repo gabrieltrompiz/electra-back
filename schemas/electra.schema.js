@@ -78,7 +78,7 @@ const typeDefs = gql`
     loggedHours: Int!
     status: TaskStatus!
     description: String!
-    comments: [Comment]
+    comments: [TaskComment]
     subtasks: [SubTask]
     users: [Profile]
   }
@@ -104,10 +104,14 @@ const typeDefs = gql`
     taskId: ID!
   }
 
-  type Comment {
-    id: ID! 
-    task: Task!
-    user: Profile! 
+  type TaskComment {
+    id: ID!
+    user: Profile!
+    description: String!
+  }
+
+  input CommentInput {
+    taskId: ID!
     description: String!
   }
 
@@ -243,6 +247,10 @@ const typeDefs = gql`
     editSubTask(description: String!, subTaskId: ID!): SubTask!
     setSubTaskStatus(status: Boolean! subTaskId: ID!): SubTask!
     deleteSubTask(subTaskId: ID!): ID
+
+    createComment(comment: CommentInput!): TaskComment!
+    editComment(commentId: ID!, description: String!): TaskComment!
+    deleteComment(commentId: ID): ID
     
     markNotificationAsRead(id: ID!): ID
     deleteNotification(id: ID!): ID

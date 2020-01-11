@@ -2,6 +2,7 @@ const user = require('./user');
 const workspace = require('./workspace');
 const sprint = require('./sprint');
 const task = require('./task');
+const comment = require('./comment');
 const subtask = require('./subtask');
 const notification = require('./notification');
 const { JSONResolver, DateTimeResolver, NonNegativeIntResolver } = require('graphql-scalars');
@@ -44,6 +45,9 @@ const resolvers = {
     editSubTask: applyMiddleware(isAuthenticated)(subtask.editSubtask),
     setSubTaskStatus: applyMiddleware(isAuthenticated)(subtask.setStatus),
     deleteSubTask: applyMiddleware(isAuthenticated)(subtask.deleteSubtask),
+    createComment: applyMiddleware(isAuthenticated)(comment.createComment),
+    editComment: applyMiddleware(isAuthenticated)(comment.editComment),
+    deleteComment: applyMiddleware(isAuthenticated)(comment.deleteComment),
     markNotificationAsRead: applyMiddleware(isAuthenticated)(notification.markAsRead),
     deleteNotification: applyMiddleware(isAuthenticated)(notification.deleteNotification)
   },
@@ -61,7 +65,8 @@ const resolvers = {
   },
   Task: {
     users: task.getTaskMembers,
-    subtasks: subtask.getSubtasks
+    subtasks: subtask.getSubtasks,
+    comments: comment.getComments
   }
 };
 
