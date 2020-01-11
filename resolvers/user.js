@@ -84,7 +84,7 @@ const getUserByUsername = async (_, { username }) => {
 const editProfile = async (_, { profile }, context) => {
   try {
     if(!profile.fullName || !profile.email || !profile.username || !profile.pictureUrl) throw new Error('User data cannot be empty');
-    return await userHelper.editProfile(profile, context.getUser().id);
+    return await userHelper.editProfile(profile, context);
   } catch(e) {
     console.log(e.stack);
     throw Error('Could not Edit Profile');
