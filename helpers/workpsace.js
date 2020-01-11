@@ -16,18 +16,8 @@ const createWorkspace = async ({ name, description, repoOwner, repoName, members
     members.forEach(async (m) => {
       if(m.id === creator.id) {
         await client.query(queries.addUserToWorkspace, [id, m.id, m.role === 'ADMIN' ? 1 : 2]);
-      } else {
-        const desc = `${creator.fullName} invited you to join ${name}`;
-        const meta = {
-          workspace: {
-            id,
-            name,
-            description
-          },
-          sender: {...creator, password: null },
-          role: m.role
-        }
-        await client.query(queries.sendNotification, [m.id, desc, meta, 2]);
+      } else {        
+        await client.query(queries.sendNotification, [creator.id, m.id, id, 1, 1]);
       }
     });
     await client.query('COMMIT');
@@ -105,24 +95,15 @@ const getWorkspaceMembers = async id => {
 const inviteUserToWorkspace = async (users, workspaceId, creator) => {
   const client = await pool.connect();
   try {
-    const workspace = (await client.query(queries.getWorkspace, [workspaceId])).rows[0];
+    await client.query('BEGIN');
     users.map(async u => {
-      const desc = `${creator} invited you to join ${workspace.workspace_name}`;
-      const meta = {
-        workspace: {
-          workspace: workspace.id,
-          name: workspace.name,
-          description: workspace.description
-        },
-        sender: {...creator, password: null },
-        role: u.role
-      };
-      await client.query(queries.sendNotification, [u.id, desc, meta, 2]);
+      await client.query(queries.sendNotification, [creator, u.id, workspaceId, 1, 1]);
     });
-
-    return null;
+    await client.query('COMMIT');
+    return workspaceId;
   } catch(e) {
     console.log(e.stack)
+    client.query('ROLLBACK');
   } finally {
     client.release();
   }
@@ -216,23 +197,12 @@ const deleteWorkspace = async (workspaceId, creator) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
-    console.log(workspaceId)
     const users = ( await client.query(queries.getUsersFromWorkspace, [workspaceId]) ).rows;
     const w = ( await client.query(queries.getWorkspace, [workspaceId]) ).rows[0]
     users.splice(users.findIndex(u => u.user_id == creator.id), 1);
-    console.log(users);
-    console.log(creator);
     users.forEach(async u => {
-      const desc = `Workspace ${w.workspace_name} has been deleted!`;
-      const meta = {
-        workspace: {
-          id: w.workspace_id,
-          name: w.workspace_name,
-          description: w.workspace_description
-        },
-        sender: {...creator, password: null },
-      }
-      await client.query(queries.sendNotification, [u.user_id, desc, meta, 1]);
+      if(u.user_id != creator.id)
+        await client.query(queries.sendNotification, [creator.id, u.user_id, workspaceId, 1, 4]);
     });
     await client.query(queries.deleteWorkspace, [workspaceId]);
     await client.query('COMMIT');

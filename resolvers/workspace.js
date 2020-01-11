@@ -34,7 +34,7 @@ const getWorkspaceMembers = async (parent) => {
 /** Mutation to invite new users to the indicated workspace */
 const inviteUserToWorkspace = async (_, { users, workspace }, context) => {
   try {
-    return await workspaceHelper.inviteUserToWorkspace(users, workspace, context.getUser().fullName);
+    return await workspaceHelper.inviteUserToWorkspace(users, workspace, context.getUser().id);
   } catch(e) {
     console.log(e.stack);
     throw Error('Could not send Invitation to selected Users');

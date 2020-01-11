@@ -46,8 +46,8 @@ module.exports = {
   editComment: 'UPDATE task_comment SET comment_description = $1 WHERE comment_id = $2 RETURNING *;',
   deleteComment: 'DELETE FROM task_comment WHERE comment_id = $1;',
   /* NOTIFICATIONS */
-  sendNotification: 'INSERT INTO notification(user_id, type_notification_id, notification_description, notification_meta, notification_read) VALUES($1, $4, $2, $3, FALSE)',
+  sendNotification: 'INSERT INTO notification (sender_id, receiver_id, target_id, type_target_id, type_notification_id) VALUES($1, $2, $3, $4, $5);',
   getNotifications: 'SELECT * FROM notification WHERE user_id = $1;',
-  markAsRead: 'UPDATE notification SET notification_read = TRUE WHERE notification_id = $1 AND user_id = $2;',
-  deleteNotification: 'DELETE FROM notification WHERE notification_id = $1 AND user_id = $2;'
+  markAsRead: 'UPDATE notification SET notification_read = TRUE WHERE notification_id = $1;',
+  deleteNotification: 'DELETE FROM notification WHERE notification_id = $1;'
 };
