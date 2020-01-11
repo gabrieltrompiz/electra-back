@@ -146,13 +146,17 @@ const addUserToWorkspace = async (userId, workspaceId, role) => {
   }
 };
 
-const removeUserFromWorkspace = async (userId, workspaceId) => {
+const removeUserFromWorkspace = async (userId, workspaceId, senderId) => {
   const client = await pool.connect();
   try {
+    await client.query('BEGIN');
     await client.query(queries.removeUserFromWorkspace, [userId, workspaceId]);
+    await client.query(queries.sendNotification, [senderId, userId, workspaceId, 1, 2]);
+    await client.query('COMMIT');
     return userId;
   } catch(e) {
-    console.log(e.stack)
+    console.log(e.stack);
+    client.query('ROLLBACK');
     throw Error(e);
   } finally {
     client.release();
@@ -179,14 +183,20 @@ const exitFromWorkspace = async (userId, workspaceId) => {
   }
 };
 
-const setWorkspaceUserRole = async (userId, workspaceId, role) => {
+const setWorkspaceUserRole = async (userId, workspaceId, role, senderId) => {
   const client = await pool.connect();
   try {
+    await client.query('BEGIN');
+    const isMember = (await client.query(queries.isUserWorkspaceMember, [userId, workspaceId])).rowCount === 1 ? true : false;
+    if(!isMember) throw new Error();
     const _role = role == 'ADMIN' ? 1 : 2;
     await client.query(queries.setWorkspaceUserRole, [_role, userId, workspaceId]);
+    await client.query(queries.sendNotification, [senderId, userId, workspaceId, 1, 3]);
+    await client.query('COMMIT');
     return userId;
   } catch(e) {
     console.log(e.stack)
+    await client.query('ROLLBACK');
     throw Error(e);
   } finally {
     client.release();

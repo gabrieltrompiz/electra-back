@@ -62,7 +62,7 @@ const addUserToWorkspace = async (_, { input }) => {
 const removeUserFromWorkspace = async (_, { userId, workspaceId }, context) => {
   try {
     if (context.getUser().id == userId) throw new Error();
-    return await workspaceHelper.removeUserFromWorkspace(userId, workspaceId);
+    return await workspaceHelper.removeUserFromWorkspace(userId, workspaceId, context.getUser().id);
   } catch(e) {
     console.log(e.stack);
     throw Error('Could not remove user from Workspace');
@@ -78,9 +78,9 @@ const exitFromWorkspace = async (_, { workspaceId }, context) => {
   }
 }
 
-const setWorkspaceUserRole = async (_, { input }) => {
+const setWorkspaceUserRole = async (_, { input }, context) => {
   try {
-    return await workspaceHelper.setWorkspaceUserRole(input.userId, input.workspaceId, input.role);
+    return await workspaceHelper.setWorkspaceUserRole(input.userId, input.workspaceId, input.role, context.getUser().id);
   } catch(e) {
     console.log(e.stack);
     throw Error('Could not change user role');
