@@ -100,10 +100,10 @@ const search = async (param, id) => {
  * @param {Object} profile - User data
  * @returns {Promise} Profile
  */
-const editProfile = async ({ fullName, email, gitHubToken, pictureUrl }, userId) => {
+const editProfile = async ({ fullName, username, email, gitHubToken, pictureUrl }, userId) => {
   const client = await pool.connect();
   try {
-    const res = (await client.query(queries.editProfile, [fullName, email, gitHubToken || '', pictureUrl || '', userId])).rows[0];
+    const res = (await client.query(queries.editProfile, [fullName, username, email, gitHubToken, pictureUrl, userId])).rows[0];
     
     return {
       id: userId,

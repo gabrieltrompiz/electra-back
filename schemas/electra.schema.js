@@ -155,10 +155,11 @@ const typeDefs = gql`
   }
 
   input EditProfileInput {
-    fullName: String
-    email: String
+    fullName: String!
+    username: String!
+    email: String!
+    pictureUrl: String!
     gitHubToken: String
-    pictureUrl: String
   }
 
   input LoginInput {
