@@ -60,7 +60,7 @@ const register = async user => {
   const client = await pool.connect();
   try {
     const res = (await client.query(queries.registerUser, 
-      [user.fullName, user.username, user.email, user.gitHubToken, user.password, user.pictureUrl])).rows[0];
+      [user.fullName, user.username, user.email, user.gitHubToken ? user.gitHubToken : null, user.password, user.pictureUrl])).rows[0];
     const _user = {
       id: res.user_id,
       username: res.user_username,
@@ -112,7 +112,7 @@ const search = async (param, id) => {
 const editProfile = async ({ fullName, username, email, gitHubToken, pictureUrl }, context) => {
   const client = await pool.connect();
   try {
-    await client.query(queries.editProfile, [fullName, username, email, gitHubToken, pictureUrl, context.getUser().id]);
+    await client.query(queries.editProfile, [fullName, username, email, gitHubToken ? gitHubToken : null, pictureUrl, context.getUser().id]);
     
     context.login({
       ...context.getUser(),
