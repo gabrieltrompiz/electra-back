@@ -80,7 +80,7 @@ const typeDefs = gql`
     description: String!
     comments: [TaskComment]
     subtasks: [SubTask]
-    users: [Profile]
+    user: Profile
   }
 
   input TaskInput {
@@ -90,7 +90,7 @@ const typeDefs = gql`
     description: String!
     estimatedHours: PosInt
     issueId: ID,
-    users: [ID]!
+    user: ID
   }
 
   type SubTask {
@@ -200,7 +200,7 @@ const typeDefs = gql`
   }
 
   input UserTaskInput {
-    userId: ID!
+    userId: ID
     taskId: ID!
   }
 
@@ -237,8 +237,8 @@ const typeDefs = gql`
     sendSprintToBacklog(id: ID!): ID
     
     createTask(task: TaskInput!): Task!
-    addUserTask(input: UserTaskInput!): ID
-    removeUserTask(input: UserTaskInput!): ID
+    changeUserTask(input: UserTaskInput!): ID
+    changeTaskDescription(taskId: ID! description: String!): Task!
     updateTaskStatus(taskId: ID!, status: TaskStatus!): TaskStatus
     updateTaskHours(taskId: ID!, hours: Int!): Int
     deleteTask(id: ID!): ID

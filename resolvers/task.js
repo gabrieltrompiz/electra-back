@@ -11,12 +11,12 @@ const createTask = async (_, { task }, context) => {
 }
 
 /** Query to get all members from a task */
-const getTaskMembers = async (parent) => {
+const getTaskUser = async (parent) => {
   try {
-    return await taskHelper.getTaskMembers(parent.id);
+    return await taskHelper.getTaskUser(parent.id);
   } catch(e) {
     console.log(e.stack);
-    throw Error('Could not add members to task');
+    throw Error('Could not get user task');
   }
 }
 
@@ -61,23 +61,22 @@ const getTasks = async (parent) => {
 }
 
 /** Mutation to add user to task */
-const addUserTask = async (_, { input }, context) => {
+const changeUserTask = async (_, { input }, context) => {
   try {
-    return await taskHelper.addUserTask(input.userId, input.taskId, context.getUser().id);
+    return await taskHelper.changeUserTask(input.userId, input.taskId, context.getUser().id);
   } catch(e) {
     console.log(e.stack);
-    throw Error('Could not add user');
+    throw Error('Could not change task user');
   }
 }
 
-/** Mutation to remove user from task */
-const removeUserTask = async (_, { input }) => {
+const changeTaskDescription = async (_, { taskId, description }, context) => {
   try {
-    return await taskHelper.removeUserTask(input.userId, input.taskId);
+    return await taskHelper.changeTaskDescription(taskId, description);
   } catch(e) {
     console.log(e.stack);
-    throw Error('Could not remove user');
+    throw Error('Could not change task user');
   }
 }
 
-module.exports = { createTask, addUserTask, removeUserTask, getTasks, getTaskMembers, updateTaskHours, updateTaskStatus, deleteTask }
+module.exports = { createTask, changeUserTask, getTasks, getTaskUser, updateTaskHours, updateTaskStatus, changeTaskDescription, deleteTask }

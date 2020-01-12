@@ -36,8 +36,8 @@ const resolvers = {
     createSprint: applyMiddleware(isAuthenticated)(sprint.createSprint),
     sendSprintToBacklog: applyMiddleware(isAuthenticated)(sprint.sendSprintToBacklog),
     createTask: applyMiddleware(isAuthenticated)(task.createTask),
-    addUserTask: applyMiddleware(isAuthenticated)(task.addUserTask),
-    removeUserTask: applyMiddleware(isAuthenticated)(task.removeUserTask),
+    changeUserTask: applyMiddleware(isAuthenticated)(task.changeUserTask),
+    changeTaskDescription: applyMiddleware(isAuthenticated)(task.changeTaskDescription),
     updateTaskStatus: applyMiddleware(isAuthenticated)(task.updateTaskStatus),
     updateTaskHours: applyMiddleware(isAuthenticated)(task.updateTaskHours),
     deleteTask: applyMiddleware(isAuthenticated)(task.deleteTask),
@@ -64,7 +64,7 @@ const resolvers = {
     tasks: task.getTasks,
   },
   Task: {
-    users: task.getTaskMembers,
+    user: task.getTaskUser,
     subtasks: subtask.getSubtasks,
     comments: comment.getComments
   }
