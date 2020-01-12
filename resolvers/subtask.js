@@ -9,9 +9,9 @@ const getSubtasks = async (parent) => {
   }
 }
 
-const createSubtask = async (_, { subTask }) => {
+const createSubtask = async (_, { subTask }, context) => {
   try {
-    return await subtaskHelper.createSubtask(subTask);
+    return await subtaskHelper.createSubtask(subTask, context.getUser().id);
   } catch(e) {
     console.log(e.stack);
     throw Error('Could not create subtask');

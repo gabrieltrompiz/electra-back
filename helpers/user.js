@@ -58,17 +58,26 @@ const checkEmail = async email => {
  */
 const register = async user => {
   const client = await pool.connect();
-  const res = (await client.query(queries.registerUser, [user.fullName, user.username, user.email, user.gitHubToken, user.password, user.pictureUrl])).rows[0];
-  client.release();
-  const _user = {
-    id: res.user_id,
-    username: res.user_username,
-    fullName: res.user_fullname,
-    email: res.user_email,
-    gitHubToken: res.user_github_token,
-    pictureUrl: res.user_picture_url
-  };
-  return { _user };
+  try {
+    const res = (await client.query(queries.registerUser, 
+      [user.fullName, user.username, user.email, user.gitHubToken, user.password, user.pictureUrl])).rows[0];
+    const _user = {
+      id: res.user_id,
+      username: res.user_username,
+      fullName: res.user_fullname,
+      email: res.user_email,
+      gitHubToken: res.user_github_token,
+      pictureUrl: res.user_picture_url
+    };
+    return { _user };
+  } catch(e) {
+    throw Error(e);
+  } finally {
+    client.release();
+  }
+  
+  
+  
 };
 
 /** Searchs an user by their username, email or full name
@@ -89,7 +98,7 @@ const search = async (param, id) => {
       pictureUrl: u.user_picture_url
     }));
   } catch(e) {
-    console.log(e.stack);
+    throw Error(e);
   } finally {
     client.release();
   }
@@ -119,7 +128,7 @@ const editProfile = async ({ fullName, username, email, gitHubToken, pictureUrl 
       password: undefined
     };
   } catch(e) {
-    console.log(e.stack);
+    throw Error(e);
   } finally {
     client.release();
   }

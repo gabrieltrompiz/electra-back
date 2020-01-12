@@ -7,7 +7,7 @@ const queries = require('../utils/queries');
  * @param {Object} task - data needed to create Task
  * @returns {Promise} task
  */
-const createTask = async (task) => {
+const createTask = async (task, senderId) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
@@ -15,9 +15,12 @@ const createTask = async (task) => {
     const res = await client.query(queries.createTask, [status, task.sprintId, task.name,
       task.description ? task.description : null, task.estimatedHours, task.issueId ? task.issueId : null ]);
 
-    let taskId = res.rows[0].task_id;
+    const taskId = res.rows[0].task_id;
+    const sprintId = (await client.query(queries.getTask, [taskId])).rows[0].sprint_id;
+    
     task.users.forEach(async uid => {
-      await client.query(queries.addUserToTask, [uid, taskId]);
+      const x = (await client.query(queries.addUserToTask, [uid, taskId])).rowCount;
+      if(senderId != uid && x > 0) await client.query(queries.sendNotification, [senderId, uid, sprintId, 2, 7]);
     });
     await client.query('COMMIT');
 
@@ -30,8 +33,8 @@ const createTask = async (task) => {
       description: task.description
     };
   } catch(e) {
-    console.log(e.stack);
     client.query('ROLLBACK');
+    throw Error(e);
   } finally {
     client.release();
   }
@@ -55,7 +58,7 @@ const getTaskMembers = async (id) => {
       email: u.user_email
     }));
   } catch(e) {
-    console.log(e.stack);
+    throw Error(e);
   } finally {
     client.release();
   }
@@ -68,13 +71,23 @@ const getTaskMembers = async (id) => {
  * @param {number} taskId - task id
  * @returns {Promise} user_id
  */
-const addUserTask = async (userId, taskId) => {
+const addUserTask = async (userId, taskId, senderId) => {
   const client = await pool.connect();
   try {
+    await client.query('BEGIN');
     const res = await client.query(queries.addUserToTask, [userId, taskId]);
-    return res.rows[0].user_id
+    if(res.rowCount == 0) throw new Error();
+    
+    if(senderId != userId) {
+      const sprintId = (await client.query(queries.getTask, [taskId])).rows[0].sprint_id;
+      await client.query(queries.sendNotification, [senderId, userId, sprintId, 2, 7]);
+    }
+    await client.query('COMMIT');
+
+    return res.rows[0].user_id;
   } catch(e) {
-    console.log(e.stack);
+    client.query('ROLLBACK');
+    throw Error(e);
   } finally {
     client.release();
   }
@@ -93,7 +106,7 @@ const removeUserTask = async (userId, taskId) => {
     await client.query(queries.removeUserFromTask, [userId, taskId]);
     return userId;
   } catch(e) {
-    console.log(e.stack);
+    throw Error(e);
   } finally {
     client.release();
   }
@@ -106,14 +119,26 @@ const removeUserTask = async (userId, taskId) => {
  * @param {number} status - status to be set
  * @returns {Promise} status
  */
-const updateTaskStatus = async (taskId, status) => {
+const updateTaskStatus = async (taskId, status, senderId) => {
   const client = await pool.connect();
   try {
+    await client.query('BEGIN');
     const statusId = status === 'TODO' ? 1 : status === 'IN_PROGRESS' ? 2 : 3;
+    
     await client.query(queries.updateTaskStatus, [statusId, taskId]);
+    const users = await client.query(queries.getUsersFromTask, [taskId]);
+    users.rows.forEach(async u => {
+      if(senderId != u.user_id) {
+        const sprintId = (await client.query(queries.getTask, [taskId])).rows[0].sprint_id;
+        await client.query(queries.sendNotification, [senderId, u.user_id, sprintId, 2, 8]);
+      }
+    });
+    await client.query('COMMIT');
+    
     return status;
   } catch(e) {
-    console.log(e.stack);
+    client.query('ROLLBACK');
+    throw Error(e);
   } finally {
     client.release();
   }
@@ -132,7 +157,7 @@ const updateTaskHours = async (taskId, hours) => {
     const res = await client.query(queries.updateTaskHours, [hours, taskId]);
     return res.rows[0].hours;
   } catch(e) {
-    console.log(e.stack);
+    throw Error(e);
   } finally {
     client.release();
   }
@@ -153,8 +178,8 @@ const deleteTask = async (id) => {
     await client.query('COMMIT');
     return id;
   } catch(e) {
-    console.log(e.stack);
     client.query('ROLLBACK');
+    throw Error(e);
   } finally {
     client.release();
   }
@@ -173,7 +198,7 @@ const getTaskList = async (sprintId) => {
       description: t.task_description
     }));
   } catch(e) {
-    console.log(e.stack);
+    throw Error(e);
   } finally {
     client.release();
   }

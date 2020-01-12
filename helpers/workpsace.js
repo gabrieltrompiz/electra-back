@@ -27,8 +27,8 @@ const createWorkspace = async ({ name, description, repoOwner, repoName, members
       description
     };
   } catch(e) {
-    console.log(e.stack);
     client.query('ROLLBACK');
+    throw Error(e);
   } finally {
     client.release();
   }
@@ -51,7 +51,7 @@ const getWorkspaces = async id => {
       repo: r.workspace_repo_id,
     }));
   } catch(e) {
-    console.log(e.stack);
+    throw Error(e);
   } finally {
     client.release();
   }
@@ -78,7 +78,7 @@ const getWorkspaceMembers = async id => {
       role: m.type_user_workspace_id === 1 ? 'ADMIN' : 'MEMBER'
     }));
   } catch(e) {
-    console.log(e.stack)
+    throw Error(e);
   } finally {
     client.release();
   }
@@ -96,14 +96,12 @@ const inviteUserToWorkspace = async (users, workspaceId, creator) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
-    users.map(async u => {
-      await client.query(queries.sendNotification, [creator, u.id, workspaceId, 1, 1]);
-    });
+    users.forEach(async u => await client.query(queries.sendNotification, [creator, u.id, workspaceId, 1, 1]));
     await client.query('COMMIT');
     return workspaceId;
   } catch(e) {
-    console.log(e.stack)
     client.query('ROLLBACK');
+    throw Error(e);
   } finally {
     client.release();
   }
@@ -127,7 +125,7 @@ const editWorkspace = async ({ id, name, description, repoOwner, repoName }) => 
       repoName
     }
   } catch(e) {
-    console.log(e.stack)
+    throw Error(e);
   } finally {
     client.release();
   }
@@ -139,7 +137,6 @@ const addUserToWorkspace = async (userId, workspaceId, role) => {
     await client.query(queries.addUserToWorkspace, [workspaceId, userId, role == 'ADMIN' ? 1 : 2]);
     return userId;
   } catch(e) {
-    console.log(e.stack)
     throw Error(e);
   } finally {
     client.release();
@@ -155,7 +152,6 @@ const removeUserFromWorkspace = async (userId, workspaceId, senderId) => {
     await client.query('COMMIT');
     return userId;
   } catch(e) {
-    console.log(e.stack);
     client.query('ROLLBACK');
     throw Error(e);
   } finally {
@@ -175,7 +171,6 @@ const exitFromWorkspace = async (userId, workspaceId) => {
     await client.query('COMMIT');
     return userId;
   } catch(e) {
-    console.log(e.stack)
     client.query('ROLLBACK');
     throw Error(e);
   } finally {
@@ -195,7 +190,6 @@ const setWorkspaceUserRole = async (userId, workspaceId, role, senderId) => {
     await client.query('COMMIT');
     return userId;
   } catch(e) {
-    console.log(e.stack)
     await client.query('ROLLBACK');
     throw Error(e);
   } finally {
@@ -219,7 +213,6 @@ const deleteWorkspace = async (workspaceId, creator) => {
 
     return workspaceId;
   } catch(e) {
-    console.log(e.stack)
     client.query('ROLLBACK');
     throw Error(e);
   } finally {

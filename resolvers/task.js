@@ -1,9 +1,9 @@
 const taskHelper = require('../helpers/task');
 
 /** Mutation to create new Task */
-const createTask = async (_, { task }) => {
+const createTask = async (_, { task }, context) => {
   try {
-    return await taskHelper.createTask(task);
+    return await taskHelper.createTask(task, context.getUser().id);
   } catch(e) {
     console.log(e.stack);
     throw Error('Could not create task');
@@ -21,9 +21,9 @@ const getTaskMembers = async (parent) => {
 }
 
 /** Mutation to change task status */
-const updateTaskStatus = async (_, { taskId, status }) => {
+const updateTaskStatus = async (_, { taskId, status }, context) => {
   try {
-    return await taskHelper.updateTaskStatus(taskId, status);
+    return await taskHelper.updateTaskStatus(taskId, status, context.getUser().id);
   } catch(e) {
     console.log(e.stack);
     throw Error('Could not update task status');
@@ -61,9 +61,9 @@ const getTasks = async (parent) => {
 }
 
 /** Mutation to add user to task */
-const addUserTask = async (_, { input }) => {
+const addUserTask = async (_, { input }, context) => {
   try {
-    return await taskHelper.addUserTask(input.userId, input.taskId);
+    return await taskHelper.addUserTask(input.userId, input.taskId, context.getUser().id);
   } catch(e) {
     console.log(e.stack);
     throw Error('Could not add user');

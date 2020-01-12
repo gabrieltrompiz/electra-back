@@ -1,9 +1,9 @@
 const sprintHelper = require('../helpers/sprint');
 
 /** Mutation to create a new active sprint */
-const createSprint = async (_, { sprint }) => {
+const createSprint = async (_, { sprint }, context) => {
   try {
-    return await sprintHelper.createSprint(sprint);
+    return await sprintHelper.createSprint(sprint, context.getUser().id);
   } catch(e) {
     console.log(e.stack);
     throw Error('Could not create sprint');
@@ -11,9 +11,9 @@ const createSprint = async (_, { sprint }) => {
 }
 
 /** Mutation to send a sprint to the backlog */
-const sendSprintToBacklog = async (_, { id }) => {
+const sendSprintToBacklog = async (_, { id }, context) => {
   try {
-    return await sprintHelper.sendSprintToBacklog(id);
+    return await sprintHelper.sendSprintToBacklog(id, context.getUser().id);
   } catch(e) {
     console.log(e.stack);
     throw Error('Could not send sprint to backlog');

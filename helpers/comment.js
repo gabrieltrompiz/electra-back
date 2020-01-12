@@ -17,7 +17,6 @@ const getComments = async id => {
       description: c.comment_description
     }));
   } catch(e) {
-    console.log(e.stack);
     throw Error(e);
   } finally {
     client.release();
@@ -27,7 +26,15 @@ const getComments = async id => {
 const createComment = async ({ taskId, description }, creator) => {
   const client = await pool.connect();
   try {
+    await client.query('BEGIN');
     const c = (await client.query(queries.createComment, [taskId, creator.id, description])).rows[0];
+    const users = await client.query(queries.getUsersFromTask, [taskId]);
+
+    users.rows.forEach(async u => {
+      if(creator.id != u.user_id) await client.query(queries.sendNotification, [creator.id, u.user_id, taskId, 3, 9]);
+    })
+
+    await client.query('COMMIT');
     return {
       id: c.comment_id,
       user: {
@@ -40,7 +47,7 @@ const createComment = async ({ taskId, description }, creator) => {
       description
     }
   } catch(e) {
-    console.log(e.stack);
+    client.query('ROLLBACK');
     throw Error(e);
   } finally {
     client.release();
@@ -62,7 +69,6 @@ const editComment = async (id, description, user) => {
       description: c.comment_description
     };
   } catch(e) {
-    console.log(e.stack);
     throw Error(e);
   } finally {
     client.release();
@@ -75,7 +81,6 @@ const deleteComment = async id => {
     await client.query(queries.deleteComment, [id]);
     return id;
   } catch(e) {
-    console.log(e.stack);
     throw Error(e);
   } finally {
     client.release();

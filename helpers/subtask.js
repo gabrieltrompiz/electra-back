@@ -11,23 +11,32 @@ const getSubtasks = async (taskId) => {
       status: s.subtask_status
     }));
   } catch(e) {
-    console.log(e.stack);
+    throw Error(e);
   } finally {
     client.release();
   }
 }
 
-const createSubtask = async ({ description, taskId }) => {
+const createSubtask = async ({ description, taskId }, creatorId) => {
   const client = await pool.connect();
   try {
+    await client.query('BEGIN');
     const res = await client.query(queries.createSubtask, [description, taskId]);
+    const users = await client.query(queries.getUsersFromTask, [taskId]);
+    console.log(creatorId);
+    users.rows.forEach(async u => {
+      console.log(u.user_id)
+      if(creatorId != u.user_id) await client.query(queries.sendNotification, [creatorId, u.user_id, taskId, 3, 10]);
+    });
+    await client.query('COMMIT');
+
     return {
       id: res.rows[0].subtask_id,
       description,
       status: false
     }
   } catch(e) {
-    console.log(e.stack);
+    client.query('ROLLBACK');
     throw Error(e);
   } finally {
     client.release();
@@ -45,7 +54,6 @@ const editSubtask = async (description, id) => {
       status: res.subtask_status
     }
   } catch(e) {
-    console.log(e.stack);
     throw Error(e);
   } finally {
     client.release();
@@ -63,7 +71,6 @@ const setStatus = async (status, id) => {
       status: res.subtask_status
     }
   } catch(e) {
-    console.log(e.stack);
     throw Error(e);
   } finally {
     client.release();
@@ -76,7 +83,6 @@ const deleteSubtask = async (id) => {
     await client.query(queries.deleteSubtask, [id]);
     return id;
   } catch(e) {
-    console.log(e.stack);
     throw Error(e);
   } finally {
     client.release();

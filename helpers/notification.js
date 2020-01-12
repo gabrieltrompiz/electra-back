@@ -20,7 +20,7 @@ const getNotifications = async id => {
       read: n.notification_read
     }));
   } catch(e) {
-    console.log(e.stack);
+    throw Error(e);
   } finally {
     client.release();
   }
@@ -39,7 +39,7 @@ const markAsRead = async (id, asker) => {
     await client.query(queries.markAsRead, [id, asker]);
     return id;
   } catch(e) {
-    console.log(e.stack);
+    throw Error(e);
   } finally {
     client.release();
   }
@@ -58,7 +58,7 @@ const deleteNotification = async (id, asker) => {
     await client.query(queries.deleteNotification, [id, asker]);
     return id;
   } catch(e) {
-    console.log(e.stack);
+    throw Error(e);
   } finally {
     client.release();
   }

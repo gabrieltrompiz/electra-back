@@ -20,7 +20,7 @@ const getWorkspaceSprint = async id => {
     } : null
     return _sprint; 
   } catch(e) {
-    console.log(e.stack)
+    throw Error(e);
   } finally {
     client.release();
   }
@@ -45,7 +45,7 @@ const getWorkspaceBacklog = async id => {
     }));
     return res;
   } catch(e) {
-    console.log(e.stack)
+    throw Error(e);
   } finally {
     client.release();
   }
@@ -57,13 +57,20 @@ const getWorkspaceBacklog = async id => {
  * @param {number} id - sprint backlog
  * @returns {Promise<Array<object>>} id - id of the sprint sent to the backlog
  */
-const sendSprintToBacklog = async id => {
+const sendSprintToBacklog = async (sprintId, creatorId) => {
   const client = await pool.connect();
   try {
-    await client.query(queries.sendSprintToBacklog, [id]);
-    return id;
+    await client.query('BEGIN');
+    const workspace = await client.query(queries.sendSprintToBacklog, [sprintId]);
+    const users = await client.query(queries.getUsersFromWorkspace, [workspace.rows[0].workspace_id]);
+    users.rows.forEach(async u => {
+      if(creatorId != u.user_id) await client.query(queries.sendNotification, [creatorId, u.user_id, workspace.rows[0].workspace_id, 1, 6]);
+    });
+    await client.query('COMMIT');
+    return sprintId;
   } catch(e) {
-    console.log(e.stack)
+    client.query('ROLLBACK');
+    throw Error(e);
   } finally {
     client.release();
   }
@@ -75,11 +82,17 @@ const sendSprintToBacklog = async id => {
  * @param {number} id - workspace id
  * @returns {Promise} sprint - created sprint
  */
-const createSprint = async (sprint) => {
+const createSprint = async (sprint, creatorId) => {
   const client = await pool.connect();
   try {
+    await client.query('BEGIN');
     const res = await client.query(queries.createSprint, [sprint.workspaceId, sprint.title, sprint.startDate, sprint.finishDate]);
     if(res.rowCount > 0) {
+      const users = await client.query(queries.getUsersFromWorkspace, [sprint.workspaceId]);
+      users.rows.forEach(async u => {
+        if(creatorId != u.user_id) await client.query(queries.sendNotification, [creatorId, u.user_id, sprint.workspaceId, 1, 5]);
+      });
+      await client.query('COMMIT');
       return {
         id: res.rows[0].sprint_id,
         title: sprint.title,
@@ -91,7 +104,7 @@ const createSprint = async (sprint) => {
 
     throw new Error();
   } catch(e) {
-    console.log(e.stack);
+    client.query('ROLLBACK');
     throw Error(e);
   } finally {
     client.release();
