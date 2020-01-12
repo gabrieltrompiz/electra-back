@@ -42,7 +42,7 @@ module.exports = {
   setSubtaskStatus: 'UPDATE subtask SET subtask_status = $1 WHERE subtask_id = $2 RETURNING *;',
   deleteSubtask: 'DELETE FROM subtask WHERE subtask_id = $1;',
   /* COMMENTS */
-  getComments: 'SELECT c.*, u.user_fullname, u.user_username, u.user_picture_url FROM task_comment c INNER JOIN users u ON u.user_id = c.user_id WHERE task_id = $1;',
+  getComments: 'SELECT c.*, u.user_fullname, u.user_username, u.user_picture_url, u.user_email FROM task_comment c INNER JOIN users u ON u.user_id = c.user_id WHERE task_id = $1;',
   createComment: 'INSERT INTO task_comment (task_id, user_id, comment_description) VALUES ($1, $2, $3) RETURNING *;',
   editComment: 'UPDATE task_comment SET comment_description = $1 WHERE comment_id = $2 RETURNING *;',
   deleteComment: 'DELETE FROM task_comment WHERE comment_id = $1;',

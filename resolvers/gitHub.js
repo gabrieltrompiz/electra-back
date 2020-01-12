@@ -7,7 +7,7 @@ const getResolvers = (schema) => ({
     Profile: {
       gitHubUser: {
         resolve: (parent, args, context, info) => {
-          return context.getUser() ? context.getUser().gitHubUser ? 
+          return context.getUser() ? context.getUser().gitHubToken ? 
           info.mergeInfo.delegateToSchema({
             schema,
             operation: 'query',
