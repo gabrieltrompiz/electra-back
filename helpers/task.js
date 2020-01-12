@@ -196,5 +196,17 @@ const changeTaskDescription = async (taskId, description) => {
   }
 }
 
+const changeTaskIssue = async (taskId, issueId) => {
+  const client = await pool.connect();
+  try {
+    await client.query(queries.changeTaskIssue, [issueId, taskId]);
+    return issueId;
+  } catch(e) {
+    throw Error(e);
+  } finally {
+    client.release();
+  }
+}
+
 module.exports = { createTask, getTaskUser, deleteTask, changeUserTask,
-  updateTaskStatus, updateTaskHours, getTaskList, changeTaskDescription };
+  updateTaskStatus, updateTaskHours, getTaskList, changeTaskDescription, changeTaskIssue };

@@ -70,7 +70,7 @@ const changeUserTask = async (_, { input }, context) => {
   }
 }
 
-const changeTaskDescription = async (_, { taskId, description }, context) => {
+const changeTaskDescription = async (_, { taskId, description }) => {
   try {
     return await taskHelper.changeTaskDescription(taskId, description);
   } catch(e) {
@@ -79,4 +79,14 @@ const changeTaskDescription = async (_, { taskId, description }, context) => {
   }
 }
 
-module.exports = { createTask, changeUserTask, getTasks, getTaskUser, updateTaskHours, updateTaskStatus, changeTaskDescription, deleteTask }
+const changeTaskIssue = async (_, { taskId, issueId }) => {
+  try {
+    return await taskHelper.changeTaskIssue(taskId, issueId);
+  } catch(e) {
+    console.log(e.stack);
+    throw Error('Could not change task issue');
+  }
+}
+
+module.exports = { createTask, changeUserTask, getTasks, getTaskUser, updateTaskHours,
+  updateTaskStatus, changeTaskDescription, changeTaskIssue, deleteTask };

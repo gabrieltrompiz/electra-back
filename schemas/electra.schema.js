@@ -239,6 +239,7 @@ const typeDefs = gql`
     createTask(task: TaskInput!): Task!
     changeUserTask(input: UserTaskInput!): ID
     changeTaskDescription(taskId: ID! description: String!): Task!
+    changeTaskIssue(taskId: ID! issueId: ID): ID
     updateTaskStatus(taskId: ID!, status: TaskStatus!): TaskStatus
     updateTaskHours(taskId: ID!, hours: Int!): Int
     deleteTask(id: ID!): ID

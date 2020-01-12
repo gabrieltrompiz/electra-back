@@ -28,11 +28,9 @@ const createComment = async ({ taskId, description }, creator) => {
   try {
     await client.query('BEGIN');
     const c = (await client.query(queries.createComment, [taskId, creator.id, description])).rows[0];
-    const users = await client.query(queries.getUsersFromTask, [taskId]);
+    const userId = (await client.query(queries.getUserFromTask, [taskId])).rows[0].user_id;
 
-    users.rows.forEach(async u => {
-      if(creator.id != u.user_id) await client.query(queries.sendNotification, [creator.id, u.user_id, taskId, 3, 9]);
-    })
+    if(creator.id != userId) await client.query(queries.sendNotification, [creator.id, userId, taskId, 3, 9]);
 
     await client.query('COMMIT');
     return {

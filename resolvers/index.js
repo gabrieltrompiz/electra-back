@@ -38,6 +38,7 @@ const resolvers = {
     createTask: applyMiddleware(isAuthenticated)(task.createTask),
     changeUserTask: applyMiddleware(isAuthenticated)(task.changeUserTask),
     changeTaskDescription: applyMiddleware(isAuthenticated)(task.changeTaskDescription),
+    changeTaskIssue: applyMiddleware(isAuthenticated)(task.changeTaskIssue),
     updateTaskStatus: applyMiddleware(isAuthenticated)(task.updateTaskStatus),
     updateTaskHours: applyMiddleware(isAuthenticated)(task.updateTaskHours),
     deleteTask: applyMiddleware(isAuthenticated)(task.deleteTask),

@@ -22,12 +22,10 @@ const createSubtask = async ({ description, taskId }, creatorId) => {
   try {
     await client.query('BEGIN');
     const res = await client.query(queries.createSubtask, [description, taskId]);
-    const users = await client.query(queries.getUsersFromTask, [taskId]);
-    console.log(creatorId);
-    users.rows.forEach(async u => {
-      console.log(u.user_id)
-      if(creatorId != u.user_id) await client.query(queries.sendNotification, [creatorId, u.user_id, taskId, 3, 10]);
-    });
+    const userId = (await client.query(queries.getUserFromTask, [taskId])).rows[0].user_id;
+
+    if(creatorId != userId) await client.query(queries.sendNotification, [creatorId, userId, taskId, 3, 10]);
+    
     await client.query('COMMIT');
 
     return {
