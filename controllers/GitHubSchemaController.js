@@ -64,18 +64,22 @@ class GitHubSchemaController {
       if(this.haveResolvers && prevContext.graphqlContext) {
         this.token = this.token !== prevContext.graphqlContext.getUser().gitHubToken ? prevContext.graphqlContext.getUser().gitHubToken : this.token;
       }
-      if(!this.haveResolvers && prevContext.graphqlContext && prevContext.graphqlContext.getUser().gitHubToken) {
+      if(!this.haveResolvers && prevContext.graphqlContext && prevContext.graphqlContext.getUser()) {
         this.haveResolvers = true;
-        this.token = prevContext.graphqlContext.getUser().gitHubToken;
+        this.token = prevContext.graphqlContext.getUser().gitHubToken || process.env.GITHUB_TOKEN;
         this.subject.next();
+      } 
+      else if(!prevContext.graphqlContext.getUser() || !prevContext.graphqlContext.getUser().gitHubToken) {
+        this.token = process.env.GITHUB_TOKEN;
       }
-      return prevContext.graphqlContext ? 
+      const headers = prevContext.graphqlContext ? 
       ({ headers: { 'Authorization': `Bearer ${this.token}` } }) : 
-      ({ headers: {} })
+      ({ headers: { 'Authorization': `Bearer ${process.env.GITHUB_TOKEN}` } });
+      return headers;
     }).concat(this.http);
     try {
       this.schema = await introspectSchema(this.link);
-    } catch {
+    } catch(e) {
       if(!this.cachedSchema) {
         this.schema = makeExecutableSchema({ typeDefs: require('../schemas/github.schema').typeDefs, resolverValidationOptions: { requireResolversForResolveType: false } });
         this.cachedSchema = this.schema;

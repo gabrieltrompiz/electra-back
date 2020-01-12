@@ -7,7 +7,6 @@ module.exports.linkTypeDefs = gql`
 
   extend type Workspace {
     repo: Repository
-    issues: [Issue]
   }
 
   extend type Task {

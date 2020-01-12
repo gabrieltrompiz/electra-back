@@ -75,9 +75,6 @@ const register = async user => {
   } finally {
     client.release();
   }
-  
-  
-  
 };
 
 /** Searchs an user by their username, email or full name

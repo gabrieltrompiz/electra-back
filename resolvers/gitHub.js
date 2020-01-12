@@ -1,5 +1,6 @@
 const pool = require('../utils/db');
 const queries = require('../utils/queries');
+const FragmentWraper = require('../utils/FragmentWraper');
 
 /** Creates the resolvers that will delegate mutations and queries to GitHub schema */
 const getResolvers = (schema) => ({
@@ -7,7 +8,7 @@ const getResolvers = (schema) => ({
     Profile: {
       gitHubUser: {
         resolve: (parent, args, context, info) => {
-          return context.getUser() ? context.getUser().gitHubToken ? 
+          return context.isAuthenticated() ? context.getUser().gitHubToken ? 
           info.mergeInfo.delegateToSchema({
             schema,
             operation: 'query',
@@ -43,6 +44,25 @@ const getResolvers = (schema) => ({
             context,
             info
           }) : null;
+        }
+      }
+    },
+    Task: {
+      issue: {
+        resolve: async (parent, args, context, info) => {
+          const id = "MDU6SXNzdWUxNDkyMzk2OA==";
+          // TODO: change to id from db
+          return info.mergeInfo.delegateToSchema({
+            schema,
+            operation: 'query',
+            fieldName: 'node',
+            args: { id },
+            context,
+            info,
+            transforms: [
+              new FragmentWraper(schema, 'Node', 'Issue')
+            ]
+          })
         }
       }
     }
