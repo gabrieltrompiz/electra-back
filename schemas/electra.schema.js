@@ -69,6 +69,7 @@ const typeDefs = gql`
     title: String!
     startDate: Date!
     finishDate: Date!
+    endDate: Date
     status: SprintStatus!
     tasks: [Task]
   }
