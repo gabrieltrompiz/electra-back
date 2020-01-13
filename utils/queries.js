@@ -50,5 +50,21 @@ module.exports = {
   sendNotification: 'INSERT INTO notification (sender_id, receiver_id, target_id, type_target_id, type_notification_id) VALUES($1, $2, $3, $4, $5);',
   getNotifications: 'SELECT * FROM notification WHERE user_id = $1;',
   markAsRead: 'UPDATE notification SET notification_read = TRUE WHERE notification_id = $1;',
-  deleteNotification: 'DELETE FROM notification WHERE notification_id = $1;'
+  deleteNotification: 'DELETE FROM notification WHERE notification_id = $1;',
+  /* CHATS */
+  getWorkspaceChats: 'SELECT * FROM chat WHERE workspace_id = $1;',
+  getChat: 'SELECT * FROM chat WHERE chat_id = $1;',
+  createDirect: 'INSERT INTO chat (workspace_id, type_chat_id, chat_name, chat_description) VALUES ($1, 1, \'\', \'\') RETURNING *;',
+  createChannel: 'INSERT INTO chat (workspace_id, type_chat_id, chat_name, chat_description) VALUES ($1, 2, $2, $3) RETURNING *;',
+  changeGeneralChannelDescription: 'UPDATE chat SET chat_description = $1 WHERE chat_id = $2;',
+  deleteAllWorkspaceChats: 'DELETE FROM chat WHERE workspace_id = $1;',
+  getUsersFromChat: 'SELECT u.* FROM users u INNER JOIN user_chat uc ON u.user_id = uc.user_id WHERE uc.chat_id = $1;',
+  removeUserFromChat: 'DELETE FROM user_chat WHERE user_id = $1 AND chat_id = $2;',
+  addUserToChat: 'INSERT INTO user_chat (user_id, chat_id) SELECT $1, $2 WHERE EXISTS (SELECT 1 FROM user_workspace WHERE user_id = $1 AND workspace_id IN (SELECT workspace_id FROM chat WHERE chat_id = $2)) RETURNING user_id;',
+  /* MESSAGES */
+  getChatMessages: 'SELECT * FROM message WHERE chat_id = $1 ORDER BY message_date;',
+  getChatMessagesWithLimit: 'SELECT * FROM message WHERE chat_id = $1 ORDER BY message_date LIMIT $2;',
+  getChatMessagesWithLimitAndOffset: 'SELECT * FROM message WHERE chat_id = $1 AND message_date < $2 ORDER BY message_date LIMIT $3;',
+  createMessage: 'INSERT INTO message (user_id, chat_id, type_message_id, message_content) VALUES ($1, $2, $3, $4);',
+  deleteMessage: 'DELETE FROM message WHERE message_id = $1;'
 };

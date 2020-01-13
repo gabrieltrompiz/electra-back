@@ -20,6 +20,8 @@ const createWorkspace = async ({ name, description, repoOwner, repoName, members
         await client.query(queries.sendNotification, [creator.id, m.id, id, 1, 1]);
       }
     });
+    const chatId = (await client.query(queries.createChannel, [id, 'general', 'General channel for all the users to participate.'])).rows[0].chat_id;
+    await client.query(queries.addUserToChat, [creator.id, chatId]);
     await client.query('COMMIT');
     return {
       id,

@@ -54,6 +54,7 @@ const typeDefs = gql`
     description: String!
     members: [Member]
     backlog: [Sprint]
+    chats: [Chat]
     sprint: Sprint
   }
 
@@ -117,19 +118,26 @@ const typeDefs = gql`
 
   type Chat {
     id: ID! 
-    workspace: Workspace!
     type: ChatType!
     name: String
     description: String
     users: [Profile]!
+    messages: [Message]
   }
 
   type Message {
     id: ID! 
     user: Profile!
-    chat: Chat!
     type: MessageType!
-    file: String!
+    content: String!
+    date: Date!
+  }
+
+  input MessageInput {
+    userId: ID!
+    chatId: ID!
+    type: MessageType!
+    content: String!
   }
 
   type Notification {
@@ -252,6 +260,11 @@ const typeDefs = gql`
     createComment(comment: CommentInput!): TaskComment!
     editComment(commentId: ID!, description: String!): TaskComment!
     deleteComment(commentId: ID): ID
+
+    changeGeneralChatDescription(workspaceId: ID!, description: String!): Chat
+
+    sendMessage(message: MessageInput!): ExistsPayload!
+    deleteMessage(messageId: ID!): ID
     
     markNotificationAsRead(id: ID!): ID
     deleteNotification(id: ID!): ID

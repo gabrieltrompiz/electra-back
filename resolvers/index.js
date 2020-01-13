@@ -4,6 +4,8 @@ const sprint = require('./sprint');
 const task = require('./task');
 const comment = require('./comment');
 const subtask = require('./subtask');
+const chat = require('./chat');
+const message = require('./message');
 const notification = require('./notification');
 const { JSONResolver, DateTimeResolver, NonNegativeIntResolver } = require('graphql-scalars');
 const { isAuthenticated, isLoggedOut, applyMiddleware } = require('../utils/middlewares');
@@ -59,7 +61,8 @@ const resolvers = {
   Workspace: {
     members: workspace.getWorkspaceMembers,
     sprint: sprint.getSprint,
-    backlog: sprint.getBacklog
+    backlog: sprint.getBacklog,
+    chats: chat.getWorkspaceChats
   },
   Sprint: {
     tasks: task.getTasks,
@@ -68,6 +71,10 @@ const resolvers = {
     user: task.getTaskUser,
     subtasks: subtask.getSubtasks,
     comments: comment.getComments
+  },
+  Chat: {
+    // users: message.getChatUsers,
+    messages: message.getChatMessages
   }
 };
 
