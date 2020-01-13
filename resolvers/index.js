@@ -52,7 +52,9 @@ const resolvers = {
     editComment: applyMiddleware(isAuthenticated)(comment.editComment),
     deleteComment: applyMiddleware(isAuthenticated)(comment.deleteComment),
     markNotificationAsRead: applyMiddleware(isAuthenticated)(notification.markAsRead),
-    deleteNotification: applyMiddleware(isAuthenticated)(notification.deleteNotification)
+    deleteNotification: applyMiddleware(isAuthenticated)(notification.deleteNotification),
+    sendMessage: applyMiddleware(isAuthenticated)(message.createMessage),
+    deleteMessage: applyMiddleware(isAuthenticated)(message.deleteMessage)
   },
   Profile: {
     workspaces: workspace.getWorkspaces,
@@ -73,8 +75,11 @@ const resolvers = {
     comments: comment.getComments
   },
   Chat: {
-    // users: message.getChatUsers,
+    // users: chat.getChatUsers,
     messages: message.getChatMessages
+  },
+  Message: {
+    user: message.getMessageUser
   }
 };
 

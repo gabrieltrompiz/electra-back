@@ -1,9 +1,8 @@
 const chatHelper = require('../helpers/chat');
 
-const getWorkspaceChats = async (parent) => {
+const getWorkspaceChats = async (parent, _, context) => {
   try {
-    console.log(parent);
-    return await chatHelper.getWorkspaceChats(parent.id);
+    return await chatHelper.getWorkspaceChats(parent.id, context.getUser().id);
   } catch(e) {
     console.log(e.stack);
     throw Error('Could not get chats');

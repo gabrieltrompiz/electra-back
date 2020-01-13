@@ -52,7 +52,7 @@ module.exports = {
   markAsRead: 'UPDATE notification SET notification_read = TRUE WHERE notification_id = $1;',
   deleteNotification: 'DELETE FROM notification WHERE notification_id = $1;',
   /* CHATS */
-  getWorkspaceChats: 'SELECT * FROM chat WHERE workspace_id = $1;',
+  getWorkspaceChats: 'SELECT ch.* FROM chat ch INNER JOIN user_chat uc ON ch.chat_id = uc.chat_id WHERE uc.user_id = $1 AND workspace_id = $2;',
   getChat: 'SELECT * FROM chat WHERE chat_id = $1;',
   createDirect: 'INSERT INTO chat (workspace_id, type_chat_id, chat_name, chat_description) VALUES ($1, 1, \'\', \'\') RETURNING *;',
   createChannel: 'INSERT INTO chat (workspace_id, type_chat_id, chat_name, chat_description) VALUES ($1, 2, $2, $3) RETURNING *;',
@@ -65,6 +65,7 @@ module.exports = {
   getChatMessages: 'SELECT * FROM message WHERE chat_id = $1 ORDER BY message_date;',
   getChatMessagesWithLimit: 'SELECT * FROM message WHERE chat_id = $1 ORDER BY message_date LIMIT $2;',
   getChatMessagesWithLimitAndOffset: 'SELECT * FROM message WHERE chat_id = $1 AND message_date < $2 ORDER BY message_date LIMIT $3;',
+  getMessageUser: 'SELECT u.* FROM users u INNER JOIN message m ON u.user_id = m.user_id WHERE m.message_id = $1;',
   createMessage: 'INSERT INTO message (user_id, chat_id, type_message_id, message_content) VALUES ($1, $2, $3, $4);',
   deleteMessage: 'DELETE FROM message WHERE message_id = $1;'
 };
