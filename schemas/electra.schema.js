@@ -29,6 +29,7 @@ const typeDefs = gql`
   enum MessageType {
     TEXT
     FILE
+    INFO
   }
 
   enum NotificationType {
@@ -134,7 +135,6 @@ const typeDefs = gql`
   }
 
   input MessageInput {
-    userId: ID!
     chatId: ID!
     type: MessageType!
     content: String!
@@ -263,7 +263,7 @@ const typeDefs = gql`
 
     changeGeneralChatDescription(workspaceId: ID!, description: String!): Chat
 
-    sendMessage(message: MessageInput!): ExistsPayload!
+    sendMessage(message: MessageInput!): Message!
     deleteMessage(messageId: ID!): ID
     
     markNotificationAsRead(id: ID!): ID

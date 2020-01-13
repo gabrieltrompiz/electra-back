@@ -66,6 +66,6 @@ module.exports = {
   getChatMessagesWithLimit: 'SELECT * FROM message WHERE chat_id = $1 ORDER BY message_date LIMIT $2;',
   getChatMessagesWithLimitAndOffset: 'SELECT * FROM message WHERE chat_id = $1 AND message_date < $2 ORDER BY message_date LIMIT $3;',
   getMessageUser: 'SELECT u.* FROM users u INNER JOIN message m ON u.user_id = m.user_id WHERE m.message_id = $1;',
-  createMessage: 'INSERT INTO message (user_id, chat_id, type_message_id, message_content) VALUES ($1, $2, $3, $4);',
+  createMessage: 'INSERT INTO message (user_id, chat_id, type_message_id, message_content) VALUES ($1, $2, $3, $4) RETURNING *;',
   deleteMessage: 'DELETE FROM message WHERE message_id = $1;'
 };

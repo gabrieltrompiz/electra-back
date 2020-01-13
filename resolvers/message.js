@@ -18,4 +18,22 @@ const getMessageUser = async (parent) => {
   }
 }
 
-module.exports = { getChatMessages, getMessageUser };
+const createMessage = async (_, { message }, parent) => {
+  try {
+    return await messageHelper.createMessage(message, parent.getUser().id);
+  } catch(e) {
+    console.log(e.stack);
+    throw Error('Could not send message');
+  }
+}
+
+const deleteMessage = async (_, { messageId }) => {
+  try {
+    return await messageHelper.deleteMessage(messageId);
+  } catch(e) {
+    console.log(e.stack);
+    throw Error('Could not delete message');
+  }
+}
+
+module.exports = { getChatMessages, getMessageUser, createMessage, deleteMessage };

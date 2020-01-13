@@ -37,4 +37,35 @@ const getMessageUser = async id => {
   }
 };
 
-module.exports = { getMessages, getMessageUser };
+const createMessage = async ({ chatId, type, content }, senderId) => {
+  const client = await pool.connect();
+  try {
+    const _type = type === 'TEXT' ? 1 : type === 'FILE' ? 2 : 3;
+    const m = (await client.query(queries.createMessage, [senderId, chatId, _type, content])).rows[0];
+    
+    return {
+      id: m.message_id,
+      type,
+      content,
+      date: m.message_date
+    };
+  } catch(e) {
+    throw Error(e);
+  } finally {
+    client.release();
+  }
+};
+
+const deleteMessage = async id => {
+  const client = await pool.connect();
+  try {
+    await client.query(queries.deleteMessage, [id]);
+    
+    return id;
+  } catch(e) {
+    throw Error(e);
+  } finally {
+    client.release();
+  }
+};
+module.exports = { getMessages, getMessageUser, createMessage, deleteMessage };
