@@ -16,6 +16,7 @@ const getWorkspaceSprint = async id => {
       title: res.sprint_title,
       startDate: res.sprint_start_date,
       finishDate: res.sprint_finish_date,
+      endDate: null,
       status: 'IN_PROGRESS'
     } : null
     return _sprint; 
@@ -41,6 +42,7 @@ const getWorkspaceBacklog = async id => {
       title: res.sprint_title,
       startDate: res.sprint_start_date,
       finishDate: res.sprint_finish_date,
+      endDate: res.sprint_end_date,
       status: 'COMPLETED'
     }));
     return res;
@@ -98,6 +100,7 @@ const createSprint = async (sprint, creatorId) => {
         title: sprint.title,
         startDate: sprint.startDate,
         finishDate: sprint.finishDate,
+        endDate: null,
         status: 'IN_PROGRESS'
       };
     }
