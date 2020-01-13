@@ -233,6 +233,7 @@ const typeDefs = gql`
     generateGitHubToken(code: String!): TokenPayload!
     
     createWorkspace(workspace: WorkspaceInput!): Workspace!
+    searchWorkspace(search: String!): [Workspace]
     inviteUserToWorkspace(users: [MemberInput]!, workspace: ID!): ID
     editWorkspace(workspace: EditWorkspaceInput!): Workspace!
     addUserToWorkspace(input: UserWorkspaceInput!): ID

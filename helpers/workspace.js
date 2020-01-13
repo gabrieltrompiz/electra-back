@@ -50,7 +50,8 @@ const getWorkspaces = async id => {
       id: r.workspace_id,
       name: r.workspace_name,
       description: r.workspace_description,
-      repo: r.workspace_repo_id,
+      repoOwner: r.workspace_repo_owner,
+      repoName: r.workspace_repo_name,
     }));
   } catch(e) {
     throw Error(e);
@@ -222,5 +223,29 @@ const deleteWorkspace = async (workspaceId, creator) => {
   }
 };
 
-module.exports = { createWorkspace, getWorkspaces, getWorkspaceMembers,inviteUserToWorkspace,
+const searchWorkspace = async (search) => {
+  const client = await pool.connect();
+  try {
+    if (search) {
+      const workspaces = await client.query(queries.searchWorkspace, [`%${search}%`]);
+      return workspaces.rows.map(w => ({
+        id: w.workspace_id,
+        name: w.workspace_name,
+        description: w.workspace_description,
+        repoOwner: w.workspace_repo_owner,
+        repoName: w.workspace_repo_name
+      }));
+    }
+
+    return [];
+    
+  } catch(e) {
+    client.query('ROLLBACK');
+    throw Error(e);
+  } finally {
+    client.release();
+  }
+};
+
+module.exports = { createWorkspace, getWorkspaces, getWorkspaceMembers,inviteUserToWorkspace, searchWorkspace,
   editWorkspace, addUserToWorkspace, removeUserFromWorkspace, exitFromWorkspace, setWorkspaceUserRole, deleteWorkspace };

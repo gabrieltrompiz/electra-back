@@ -28,6 +28,7 @@ const resolvers = {
     editProfile: applyMiddleware(isAuthenticated)(user.editProfile),
     generateGitHubToken: user.generateGitHubToken,
     createWorkspace: applyMiddleware(isAuthenticated)(workspace.createWorkspace),
+    searchWorkspace: applyMiddleware(isAuthenticated)(workspace.searchWorkspace),
     inviteUserToWorkspace: applyMiddleware(isAuthenticated)(workspace.inviteUserToWorkspace),
     editWorkspace: applyMiddleware(isAuthenticated)(workspace.editWorkspace),
     addUserToWorkspace: applyMiddleware(isAuthenticated)(workspace.addUserToWorkspace),

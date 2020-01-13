@@ -1,4 +1,4 @@
-const workspaceHelper = require('../helpers/workpsace');
+const workspaceHelper = require('../helpers/workspace');
 
 /** Query to get an user list of workspaces */
 const getWorkspaces = async (_, __, context) => {
@@ -96,5 +96,14 @@ const deleteWorkspace = async (_, { workspaceId }, context) => {
   }
 }
 
-module.exports = { getWorkspaceMembers, getWorkspaces, createWorkspace, inviteUserToWorkspace,
+const searchWorkspace = async (_, { search }) => {
+  try {
+    return await workspaceHelper.searchWorkspace(search);
+  } catch(e) {
+    console.log(e.stack);
+    throw Error('Could not search workspace');
+  }
+}
+
+module.exports = { getWorkspaceMembers, getWorkspaces, createWorkspace, inviteUserToWorkspace, searchWorkspace,
   editWorkspace, addUserToWorkspace, removeUserFromWorkspace, exitFromWorkspace, setWorkspaceUserRole, deleteWorkspace };

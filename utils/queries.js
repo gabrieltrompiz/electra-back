@@ -19,6 +19,7 @@ module.exports = {
   getRepoData: 'SELECT workspace_repo_name, workspace_repo_owner FROM workspace WHERE workspace_id = $1',
   getWorkspace: 'SELECT * FROM workspace WHERE workspace_id = $1;',
   isUserWorkspaceMember: 'SELECT * FROM user_workspace WHERE user_id = $1 AND workspace_id = $2;',
+  searchWorkspace: 'SELECT * FROM workspace WHERE workspace_name ILIKE $1',
   /* SPRINTS */
   getSprintFromWorkspace: 'SELECT s.sprint_id, s.sprint_title, s.sprint_start_date, s.sprint_finish_date FROM sprint s INNER JOIN workspace w ON s.workspace_id = w.workspace_id WHERE s.sprint_status = TRUE AND s.workspace_id = $1;',
   getBacklogFromWorkspace: 'SELECT s.sprint_id, s.sprint_title, s.sprint_start_date, s.sprint_finish_date FROM sprint s INNER JOIN workspace w ON s.workspace_id = w.workspace_id WHERE s.sprint_status = FALSE AND s.workspace_id = $1;',
