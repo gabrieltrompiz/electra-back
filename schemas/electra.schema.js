@@ -280,6 +280,7 @@ const typeDefs = gql`
     deleteMessage(messageId: ID!): ID
     
     markNotificationAsRead(id: ID!): ID
+    markAllNotificationsAsRead: Boolean
     deleteNotification(id: ID!): ID
   }
 `

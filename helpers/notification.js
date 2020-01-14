@@ -61,6 +61,18 @@ const markAsRead = async (id, asker) => {
   }
 };
 
+const markAllAsRead = async (id) => {
+  const client = await pool.connect();
+  try {
+    await client.query(queries.markAllAsRead, [id]);
+    return true;
+  } catch(e) {
+    throw Error(e);
+  } finally {
+    client.release();
+  }
+};
+
 /** Deletes a notification
  * @async
  * @function deleteNotification
@@ -154,4 +166,5 @@ const getNotificationTask = async id => {
   }
 };
 
-module.exports = { getNotifications, markAsRead, deleteNotification, getNotificationUser, getNotificationWorkspace, getNotificationSprint, getNotificationTask };
+module.exports = { getNotifications, markAsRead, deleteNotification, getNotificationUser, getNotificationWorkspace, getNotificationSprint, getNotificationTask,
+  markAllAsRead };

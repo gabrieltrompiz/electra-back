@@ -20,6 +20,15 @@ const markAsRead = async (_, { id }, context) => {
   }
 };
 
+const markAllAsRead = async (_, __, context) => {
+  try {
+    return await notificationHelper.markAllAsRead(context.getUser().id);
+  } catch(e) {
+    console.log(e.stack);
+    throw Error('Could not mark all as read.')
+  }
+};
+
 /** Mutation to delete notification */
 const deleteNotification = async (_, { id }, context) => {
   try {
@@ -60,4 +69,4 @@ const getTarget = async (parent) => {
   }
 }
 
-module.exports = { getNotifications, markAsRead, deleteNotification, getTargetType, getNotificationUser, getTarget };
+module.exports = { getNotifications, markAsRead, deleteNotification, getTargetType, getNotificationUser, getTarget, markAllAsRead };

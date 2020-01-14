@@ -137,9 +137,15 @@ const editWorkspace = async ({ id, name, description, repoOwner, repoName }) => 
 const addUserToWorkspace = async (userId, workspaceId, role) => {
   const client = await pool.connect();
   try {
+    
+    await client.query('BEGIN');
     await client.query(queries.addUserToWorkspace, [workspaceId, userId, role == 'ADMIN' ? 1 : 2]);
+    const user = await client.query(queries.addUserToGeneralChat, [userId, workspaceId]);
+    console.log(user.rows);
+    await client.query('COMMIT');
     return userId;
   } catch(e) {
+    client.query('ROLLBACK');
     throw Error(e);
   } finally {
     client.release();
@@ -151,6 +157,7 @@ const removeUserFromWorkspace = async (userId, workspaceId, senderId) => {
   try {
     await client.query('BEGIN');
     await client.query(queries.removeUserFromWorkspace, [userId, workspaceId]);
+    await client.query(queries.removeUserFromGeneralChat, [userId, workspaceId]);
     await client.query(queries.sendNotification, [senderId, userId, workspaceId, 1, 2]);
     await client.query('COMMIT');
     return userId;

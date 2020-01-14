@@ -53,6 +53,7 @@ const resolvers = {
     editComment: applyMiddleware(isAuthenticated)(comment.editComment),
     deleteComment: applyMiddleware(isAuthenticated)(comment.deleteComment),
     markNotificationAsRead: applyMiddleware(isAuthenticated)(notification.markAsRead),
+    markAllNotificationsAsRead: applyMiddleware(isAuthenticated)(notification.markAllAsRead),
     deleteNotification: applyMiddleware(isAuthenticated)(notification.deleteNotification),
     sendMessage: applyMiddleware(isAuthenticated)(message.createMessage),
     deleteMessage: applyMiddleware(isAuthenticated)(message.deleteMessage)

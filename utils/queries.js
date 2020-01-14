@@ -53,6 +53,7 @@ module.exports = {
   sendNotification: 'INSERT INTO notification (sender_id, receiver_id, target_id, type_target_id, type_notification_id) VALUES($1, $2, $3, $4, $5);',
   getNotifications: 'SELECT * FROM notification WHERE receiver_id = $1;',
   markAsRead: 'UPDATE notification SET notification_read = TRUE WHERE notification_id = $1;',
+  markAllAsRead: 'UPDATE notification SET notification_read = TRUE WHERE receiver_id = $1;',
   deleteNotification: 'DELETE FROM notification WHERE notification_id = $1;',
   getNotificationUser: 'select u.* from notification n inner join users u on u.user_id = n.sender_id where notification_id = $1;',
   /* CHATS */
@@ -66,6 +67,8 @@ module.exports = {
   getUsersFromChat: 'SELECT u.* FROM users u INNER JOIN user_chat uc ON u.user_id = uc.user_id WHERE uc.chat_id = $1;',
   removeUserFromChat: 'DELETE FROM user_chat WHERE user_id = $1 AND chat_id = $2;',
   addUserToChat: 'INSERT INTO user_chat (user_id, chat_id) SELECT $1, $2 WHERE EXISTS (SELECT 1 FROM user_workspace WHERE user_id = $1 AND workspace_id IN (SELECT workspace_id FROM chat WHERE chat_id = $2)) RETURNING user_id;',
+  addUserToGeneralChat: 'INSERT INTO user_chat(user_id, chat_id) VALUES ($1, (select chat_id from chat where workspace_id = $2 AND chat_name ILIKE \'general\'));',
+  removeUserFromGeneralChat: 'select * from user_chat where user_id = $1 and chat_id in (select chat_id from chat where workspace_id = $2 and chat_name ILIKE \'general\');',
   /* MESSAGES */
   getChatMessages: 'SELECT * FROM message WHERE chat_id = $1 ORDER BY message_date;',
   getChatMessagesWithLimit: 'SELECT * FROM message WHERE chat_id = $1 ORDER BY message_date LIMIT $2;',
