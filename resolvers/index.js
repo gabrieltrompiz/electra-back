@@ -81,6 +81,13 @@ const resolvers = {
   },
   Message: {
     user: message.getMessageUser
+  },
+  NotificationTarget: {
+    __resolveType: notification.getTargetType
+  },
+  Notification: {
+    sender: notification.getNotificationUser,
+    target: notification.getTarget
   }
 };
 

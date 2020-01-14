@@ -25,6 +25,7 @@ module.exports = {
   getBacklogFromWorkspace: 'SELECT s.sprint_id, s.sprint_title, s.sprint_start_date, s.sprint_finish_date FROM sprint s INNER JOIN workspace w ON s.workspace_id = w.workspace_id WHERE s.sprint_status = FALSE AND s.workspace_id = $1;',
   sendSprintToBacklog: 'UPDATE sprint SET sprint_status = FALSE, sprint_end_date = now() WHERE sprint_id = $1 RETURNING workspace_id;',
   createSprint: 'INSERT INTO sprint (workspace_id, sprint_title, sprint_start_date, sprint_finish_date, sprint_status) SELECT $1, $2, $3, $4, TRUE WHERE NOT EXISTS (SELECT 1 FROM sprint WHERE sprint_status = TRUE AND workspace_id = $1) RETURNING sprint_id;',
+  getSprint: 'SELECT * FROM sprint WHERE sprint_id = $1;',
   /* TASKS */
   createTask: 'INSERT INTO task (task_status_id, sprint_id, task_name, task_description, task_estimated_hours, task_logged_hours, issue_id, user_id) VALUES ($1, $2, $3, $4, $5, 0, $6, NULL) RETURNING *;',
   getTask: 'SELECT * FROM task where task_id = $1;',
@@ -36,6 +37,7 @@ module.exports = {
   updateTaskStatus: 'UPDATE task SET task_status_id = $1 WHERE task_id = $2 RETURNING *;',
   updateTaskHours: 'UPDATE task SET task_logged_hours = task_logged_hours + $1 WHERE task_id = $2 RETURNING task_logged_hours AS hours;',
   deleteTask: 'DELETE FROM task WHERE task_id = $1;',
+  
   /* SUBTASKS */
   getSubtasks: 'SELECT * FROM subtask WHERE task_id = $1;',
   createSubtask: 'INSERT INTO subtask (subtask_description, subtask_status, task_id) VALUES ($1, FALSE, $2) RETURNING *;',
@@ -49,9 +51,10 @@ module.exports = {
   deleteComment: 'DELETE FROM task_comment WHERE comment_id = $1;',
   /* NOTIFICATIONS */
   sendNotification: 'INSERT INTO notification (sender_id, receiver_id, target_id, type_target_id, type_notification_id) VALUES($1, $2, $3, $4, $5);',
-  getNotifications: 'SELECT * FROM notification WHERE user_id = $1;',
+  getNotifications: 'SELECT * FROM notification WHERE receiver_id = $1;',
   markAsRead: 'UPDATE notification SET notification_read = TRUE WHERE notification_id = $1;',
   deleteNotification: 'DELETE FROM notification WHERE notification_id = $1;',
+  getNotificationUser: 'select u.* from notification n inner join users u on u.user_id = n.sender_id where notification_id = $1;',
   /* CHATS */
   getWorkspaceChats: 'SELECT ch.* FROM chat ch INNER JOIN user_chat uc ON ch.chat_id = uc.chat_id WHERE uc.user_id = $1 AND workspace_id = $2;',
   getChat: 'SELECT * FROM chat WHERE chat_id = $1;',

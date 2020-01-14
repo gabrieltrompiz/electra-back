@@ -13,11 +13,11 @@ const getNotifications = async id => {
     const _notifications = await client.query(queries.getNotifications, [id]);
     return _notifications.rows.map((n) => ({
       id: n.notification_id,
-      receiver: id,
-      type: n.type_notification_id === 2 ? 'INVITATION' : 'INFORMATION',
-      description: n.notification_description,
-      meta: n.notification_meta,
-      read: n.notification_read
+      type: getNotificationType(n.type_notification_id),
+      read: n.notification_read,
+      date: n.notification_date,
+      typeTarget: n.type_target_id,
+      target: n.target_id
     }));
   } catch(e) {
     throw Error(e);
@@ -25,6 +25,22 @@ const getNotifications = async id => {
     client.release();
   }
 };
+
+const getNotificationType = (id) => {
+  switch(id) {
+    case 1: return 'INVITED_TO_WORKSPACE';
+    case 2: return 'KICKED_FROM_WORKSPACE';
+    case 3: return 'CHANGED_WORKSPACE_ROLE';
+    case 4: return 'WORKSPACE_DELETED';
+    case 5: return 'CREATED_SPRINT';
+    case 6: return 'SPRINT_TO_BACKLOG';
+    case 7: return 'ASSIGNED_TASK';
+    case 8: return 'CHANGED_TASK_STATUS';
+    case 9: return 'CREATED_TASK_COMMENT';
+    case 10: return 'CREATED_TASK_SUBTASK';
+    default: return null;
+  }
+}
 
 /** Marks a notification as read
  * @async
@@ -64,4 +80,78 @@ const deleteNotification = async (id, asker) => {
   }
 };
 
-module.exports = { getNotifications, markAsRead, deleteNotification };
+const getNotificationUser = async (id) => {
+  const client = await pool.connect();
+  try {
+    const u = (await client.query(queries.getNotificationUser, [id])).rows[0];
+    return {
+      id: u.user_id,
+      fullName: u.user_fullname,  
+      username: u.user_username,
+      email: u.user_email,
+      pictureUrl: u.user_picture_url
+    }
+  } catch(e) {
+    throw Error(e);
+  } finally {
+    client.release();
+  }
+};
+
+const getNotificationWorkspace = async id => {
+  const client = await pool.connect();
+  try {
+    const w = await client.query(queries.getWorkspace, [id]);
+    return {
+      id: w.rows[0].workspace_id,
+      name: w.rows[0].workspace_name,
+      description: w.rows[0].workspace_description,
+      repoOwner: w.rows[0].workspace_repo_owner,
+      repoName: w.rows[0].workspace_repo_name,
+    }
+  } catch(e) {
+    throw Error(e);
+  } finally {
+    client.release();
+  }
+};
+
+const getNotificationSprint = async id => {
+  const client = await pool.connect();
+  try {
+    const s = (await client.query(queries.getSprint, [id])).rows[0];
+    return {
+      id: s.sprint_id,
+      title: s.sprint_title,
+      startDate: s.sprint_start_date,
+      finishDate: s.sprint_finish_date,
+      endDate: s.sprint_end_date,
+      sprintStatus: s.sprint_status == 1 ? 'COMPLETED' : 'IN_PROGRESS'
+    }
+  } catch(e) {
+    throw Error(e);
+  } finally {
+    client.release();
+  }
+};
+
+const getNotificationTask = async id => {
+  const client = await pool.connect();
+  try {
+    const t = (await client.query(queries.getTask, [id])).rows[0];
+    return {
+      id: t.task_id,
+      name: t.task_name,
+      estimatedHours: t.task_estimated_hours,
+      loggedHours: t.task_logged_hours,
+      status: t.task_status_id == 1 ? 'TODO' : t.task_status_id == 2 ? 'IN_PROGRESS' : 'DONE',
+      description: t.task_description
+    }
+  } catch(e) {
+    throw Error(e);
+  } finally {
+    client.release();
+  }
+};
+
+module.exports = { getNotifications, markAsRead, deleteNotification, getNotificationUser, getNotificationWorkspace, getNotificationSprint, getNotificationTask };

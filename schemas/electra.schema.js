@@ -33,8 +33,16 @@ const typeDefs = gql`
   }
 
   enum NotificationType {
-    INFORMATION
-    INVITATION
+    INVITED_TO_WORKSPACE
+    KICKED_FROM_WORKSPACE
+    CHANGED_WORKSPACE_ROLE
+    WORKSPACE_DELETED
+    CREATED_SPRINT
+    SPRINT_TO_BACKLOG
+    ASSIGNED_TASK
+    CHANGED_TASK_STATUS
+    CREATED_TASK_COMMENT
+    CREATED_TASK_SUBTASK
   }
 
   type Profile {
@@ -70,7 +78,7 @@ const typeDefs = gql`
     startDate: Date!
     finishDate: Date!
     endDate: Date
-    status: SprintStatus!
+    sprintStatus: SprintStatus!
     tasks: [Task]
   }
 
@@ -141,13 +149,16 @@ const typeDefs = gql`
     content: String!
   }
 
+  union NotificationTarget = Workspace | Sprint | Task
+
   type Notification {
-    id: ID! 
-    receiver: ID!
+    id: ID!
     type: NotificationType!
-    description: String!
     read: Boolean!
-    meta: JSON
+    sender: Profile!
+    target: NotificationTarget!
+    date: Date!
+    # typeTarget: ID
   }
 
   type TokenPayload {
