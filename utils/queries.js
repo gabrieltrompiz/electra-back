@@ -37,7 +37,7 @@ module.exports = {
   updateTaskStatus: 'UPDATE task SET task_status_id = $1 WHERE task_id = $2 RETURNING *;',
   updateTaskHours: 'UPDATE task SET task_logged_hours = task_logged_hours + $1 WHERE task_id = $2 RETURNING task_logged_hours AS hours;',
   deleteTask: 'DELETE FROM task WHERE task_id = $1;',
-  
+  getIssueId: 'SELECT issue_id FROM task WHERE task_id = $1',
   /* SUBTASKS */
   getSubtasks: 'SELECT * FROM subtask WHERE task_id = $1;',
   createSubtask: 'INSERT INTO subtask (subtask_description, subtask_status, task_id) VALUES ($1, FALSE, $2) RETURNING *;',

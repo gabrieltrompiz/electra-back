@@ -36,7 +36,7 @@ const getResolvers = (schema) => ({
                 name: result.workspace_repo_name,
                 owner: result.workspace_repo_owner
               };
-            } catch(e) {} finally { client.release(); }
+            } finally { client.release(); }
           }
           return (args.name && args.owner) ?  info.mergeInfo.delegateToSchema({
             schema, 
@@ -52,9 +52,15 @@ const getResolvers = (schema) => ({
     Task: {
       issue: {
         resolve: async (parent, args, context, info) => {
-          const id = "MDU6SXNzdWUxNDkyMzk2OA==";
-          // TODO: change to id from db
-          return info.mergeInfo.delegateToSchema({
+          const client = await pool.connect();
+          let id = null;
+          try {
+            const result = await client.query(queries.getIssueId, [parent.id]);
+            id = result.rows[0].issue_id;
+          } finally {
+            client.release();
+          }
+          return id ? info.mergeInfo.delegateToSchema({
             schema,
             operation: 'query',
             fieldName: 'node',
@@ -64,7 +70,7 @@ const getResolvers = (schema) => ({
             transforms: [
               new FragmentWraper(schema, 'Node', 'Issue')
             ]
-          })
+          }) : null;
         }
       }
     }
