@@ -9,4 +9,13 @@ const getWorkspaceChats = async (parent, _, context) => {
   }
 }
 
-module.exports = { getWorkspaceChats };
+const getChatUsers = async (parent) => {
+  try {
+    return await chatHelper.getChatUsers(parent.id);
+  } catch(e) {
+    console.log(e);
+    throw Error('Could not get chat users');
+  }
+}
+
+module.exports = { getWorkspaceChats, getChatUsers };

@@ -76,7 +76,7 @@ const resolvers = {
     comments: comment.getComments
   },
   Chat: {
-    // users: chat.getChatUsers,
+    users: chat.getChatUsers,
     messages: message.getChatMessages
   },
   Message: {

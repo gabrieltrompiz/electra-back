@@ -18,4 +18,22 @@ const getWorkspaceChats = async (workspaceId, userId) => {
   }
 };
 
-module.exports = { getWorkspaceChats };
+const getChatUsers = async id => {
+  const client = await pool.connect();
+  try {
+    const users = await client.query(queries.getChatUsers, [id]);
+    return users.rows.map((u) => ({
+      id: u.user_id,
+      username: u.user_username,
+      fullName: u.user_fullname,
+      email: u.user_email,
+      pictureUrl: u.user_picture_url
+    }));
+  } catch(e) {
+    throw Error(e);
+  } finally {
+    client.release();
+  }
+};
+
+module.exports = { getWorkspaceChats, getChatUsers };

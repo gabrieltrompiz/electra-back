@@ -58,6 +58,7 @@ module.exports = {
   /* CHATS */
   getWorkspaceChats: 'SELECT ch.* FROM chat ch INNER JOIN user_chat uc ON ch.chat_id = uc.chat_id WHERE uc.user_id = $1 AND workspace_id = $2;',
   getChat: 'SELECT * FROM chat WHERE chat_id = $1;',
+  getChatUsers: 'select u.* from user_chat ch inner join users u on ch.user_id = u.user_id where ch.chat_id = $1;',
   createDirect: 'INSERT INTO chat (workspace_id, type_chat_id, chat_name, chat_description) VALUES ($1, 1, \'\', \'\') RETURNING *;',
   createChannel: 'INSERT INTO chat (workspace_id, type_chat_id, chat_name, chat_description) VALUES ($1, 2, $2, $3) RETURNING *;',
   changeGeneralChannelDescription: 'UPDATE chat SET chat_description = $1 WHERE chat_id = $2;',
