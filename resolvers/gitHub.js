@@ -30,11 +30,13 @@ const getResolvers = (schema) => ({
             };
           } else {
             const client = await pool.connect();
-            const result = (await client.query(queries.getRepoData, [parent.id])).rows[0];
-            args = {
-              name: result.workspace_repo_name,
-              owner: result.workspace_repo_owner
-            };
+            try {
+              const result = (await client.query(queries.getRepoData, [parent.id])).rows[0];
+              args = {
+                name: result.workspace_repo_name,
+                owner: result.workspace_repo_owner
+              };
+            } catch(e) {} finally { client.release(); }
           }
           return (args.name && args.owner) ?  info.mergeInfo.delegateToSchema({
             schema, 
