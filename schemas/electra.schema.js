@@ -235,6 +235,7 @@ const typeDefs = gql`
     emailExists(email: String!): ExistsPayload!
     usernameExists(username: String!): ExistsPayload!
     users(search: String!): [Profile]
+    workspace(id: ID!): Workspace
   }
 
   type Mutation {

@@ -7,7 +7,7 @@ const getMessages = async id => {
     const messages = await client.query(queries.getChatMessages, [id]);
     return messages.rows.map((m) => ({
       id: m.message_id,
-      type: m.type_message_id,
+      type: m.type_message_id === 1 ? 'TEXT' : m.type_message_id === 2 ? 'FILE' : 'INFO',
       content: m.message_content,
       date: m.message_date
     }));

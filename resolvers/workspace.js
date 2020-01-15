@@ -105,5 +105,14 @@ const searchWorkspace = async (_, { search }) => {
   }
 }
 
+const getWorkspaceById = async (_, { id }) => {
+  try {
+    return await workspaceHelper.getWorkspaceById(id);
+  } catch(e) {
+    console.log(e.stack);
+    throw Error('Could not get workspace');
+  }
+}
+
 module.exports = { getWorkspaceMembers, getWorkspaces, createWorkspace, inviteUserToWorkspace, searchWorkspace,
-  editWorkspace, addUserToWorkspace, removeUserFromWorkspace, exitFromWorkspace, setWorkspaceUserRole, deleteWorkspace };
+  editWorkspace, addUserToWorkspace, removeUserFromWorkspace, exitFromWorkspace, setWorkspaceUserRole, deleteWorkspace, getWorkspaceById };

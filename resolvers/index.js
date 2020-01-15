@@ -19,7 +19,8 @@ const resolvers = {
     profile: applyMiddleware(isAuthenticated)(user.getProfile),
     emailExists: user.getUserByEmail,
     usernameExists: user.getUserByUsername,
-    users: applyMiddleware(isAuthenticated)(user.search)
+    users: applyMiddleware(isAuthenticated)(user.search),
+    workspace: applyMiddleware(isAuthenticated)(workspace.getWorkspaceById)
   },
   Mutation: {
     register: applyMiddleware(isLoggedOut)(user.register),

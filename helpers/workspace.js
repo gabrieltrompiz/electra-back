@@ -220,7 +220,6 @@ const deleteWorkspace = async (workspaceId, creator) => {
     });
     await client.query(queries.deleteWorkspace, [workspaceId]);
     await client.query('COMMIT');
-
     return workspaceId;
   } catch(e) {
     client.query('ROLLBACK');
@@ -243,9 +242,7 @@ const searchWorkspace = async (search) => {
         repoName: w.workspace_repo_name
       }));
     }
-
     return [];
-    
   } catch(e) {
     client.query('ROLLBACK');
     throw Error(e);
@@ -254,5 +251,23 @@ const searchWorkspace = async (search) => {
   }
 };
 
+const getWorkspaceById = async (id) => {
+  const client = await pool.connect();
+  try {
+    const workspace = (await client.query(queries.getWorkspaceById, [id])).rows[0];
+    return {
+      id: workspace.workspace_id,
+      name: workspace.workspace_name,
+      description: workspace.workspace_description,
+      repoOwner: workspace.workspace_repo_owner,
+      repoName: workspace.workspace_repo_name,
+    }
+  } catch(e) {
+    throw Error(e);
+  } finally {
+    client.release();
+  }
+};
+
 module.exports = { createWorkspace, getWorkspaces, getWorkspaceMembers,inviteUserToWorkspace, searchWorkspace,
-  editWorkspace, addUserToWorkspace, removeUserFromWorkspace, exitFromWorkspace, setWorkspaceUserRole, deleteWorkspace };
+  editWorkspace, addUserToWorkspace, removeUserFromWorkspace, exitFromWorkspace, setWorkspaceUserRole, deleteWorkspace, getWorkspaceById };
