@@ -80,10 +80,10 @@ const markAllAsRead = async (id) => {
  * @param {number} asker - id from the logged user to check if the notification belongs to that user
  * @returns {Promise<number>} id - id of the notification deleted
  */
-const deleteNotification = async (id, asker) => {
+const deleteNotification = async (id) => {
   const client = await pool.connect();
   try {
-    await client.query(queries.deleteNotification, [id, asker]);
+    await client.query(queries.deleteNotification, [id]);
     return id;
   } catch(e) {
     throw Error(e);

@@ -31,7 +31,7 @@ const createComment = async ({ taskId, description }, creator) => {
     const resUser = (await client.query(queries.getUserFromTask, [taskId]))
 
     if(resUser.rowCount > 0) {
-      if(creatorId != resUser.rows[0].user_id) await client.query(queries.sendNotification, [creatorId, resUser.rows[0].user_id, taskId, 3, 10]);
+      if(creator.id != resUser.rows[0].user_id) await client.query(queries.sendNotification, [creator.id, resUser.rows[0].user_id, taskId, 3, 10]);
     }
 
     await client.query('COMMIT');
