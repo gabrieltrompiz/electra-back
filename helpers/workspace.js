@@ -140,8 +140,8 @@ const addUserToWorkspace = async (userId, workspaceId, role) => {
     
     await client.query('BEGIN');
     await client.query(queries.addUserToWorkspace, [workspaceId, userId, role == 'ADMIN' ? 1 : 2]);
-    const user = await client.query(queries.addUserToGeneralChat, [userId, workspaceId]);
-    console.log(user.rows);
+    await client.query(queries.addUserToGeneralChat, [userId, workspaceId]);
+    await client.query(queries.deleteInvitations, [userId, workspaceId]);
     await client.query('COMMIT');
     return userId;
   } catch(e) {

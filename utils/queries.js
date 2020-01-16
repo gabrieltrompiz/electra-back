@@ -51,12 +51,13 @@ module.exports = {
   editComment: 'UPDATE task_comment SET comment_description = $1 WHERE comment_id = $2 RETURNING *;',
   deleteComment: 'DELETE FROM task_comment WHERE comment_id = $1;',
   /* NOTIFICATIONS */
-  sendNotification: 'INSERT INTO notification (sender_id, receiver_id, target_id, type_target_id, type_notification_id) VALUES($1, $2, $3, $4, $5);',
+  sendNotification: 'INSERT INTO notification (sender_id, receiver_id, target_id, type_target_id, type_notification_id) SELECT CAST($1 AS INTEGER), CAST($2 AS INTEGER), $3, $4, $5 WHERE $1 != $2;',
   getNotifications: 'SELECT * FROM notification WHERE receiver_id = $1;',
   markAsRead: 'UPDATE notification SET notification_read = TRUE WHERE notification_id = $1;',
   markAllAsRead: 'UPDATE notification SET notification_read = TRUE WHERE receiver_id = $1;',
   deleteNotification: 'DELETE FROM notification WHERE notification_id = $1;',
   getNotificationUser: 'select u.* from notification n inner join users u on u.user_id = n.sender_id where notification_id = $1;',
+  deleteInvitations: 'DELETE FROM notification WHERE receiver_id = $1 AND target_id = $2 AND type_target_id = 1;',
   /* CHATS */
   getWorkspaceChats: 'SELECT ch.* FROM chat ch INNER JOIN user_chat uc ON ch.chat_id = uc.chat_id WHERE uc.user_id = $1 AND workspace_id = $2;',
   getChat: 'SELECT * FROM chat WHERE chat_id = $1;',
