@@ -108,7 +108,7 @@ const updateTaskStatus = async (taskId, status, senderId) => {
     const task = (await client.query(queries.updateTaskStatus, [statusId, taskId])).rows[0];
 
     if(task.user_id && senderId != task.user_id) {
-      await client.query(queries.sendNotification, [senderId, task.user_id, task.sprint_id, 2, 8]);
+      await client.query(queries.sendNotification, [senderId, task.user_id, task.sprint_id, 3, 8]);
     }
     await client.query('COMMIT');
     
