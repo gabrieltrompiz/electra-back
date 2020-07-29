@@ -9,7 +9,7 @@
 * [About this project](#about-this-project)
 * [Tech Stack](#teck-stack)
 * [Features](#features)
-* [Controllers and Helpers](#classes-and-methods)
+* [Controllers and Helpers](#controllers-and-helpers)
 * [Avaliable Scripts](#available-scripts)
 
 ## About this project
