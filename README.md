@@ -53,7 +53,7 @@ This was used to enforce some conditions in many resolvers without the need to v
 Bluebird's Promise was used to easily apply middlewares sequentially.
 
 ### FragmentWrapper
-This was a class created to modify a request using schema delegation. This was used to modify a query to the field `node` of GitHub's schema, so we were able to include an inline fragment in the request, since `node` is an union of multiple types in GitHub's schema.
+This was a class created to modify a request transformations in a schema delegation query. This was used to modify a query to the field `node` of GitHub's schema, so we were able to include an inline fragment in the request, since `node` is an union of multiple types in GitHub's schema.
 
 ```javascript
 class FragmentWrapper {
