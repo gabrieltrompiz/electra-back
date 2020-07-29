@@ -1,6 +1,6 @@
 <br />
 <p align='center'>
-  Front-End of Desktop Application for the Synchronization of Collaborators in a Software Development Project
+  Back-End of Desktop Application for the Synchronization of Collaborators in a Software Development Project
   <br />
   <img src='https://raw.githubusercontent.com/gabrieltrompiz/electra-front/develop/screenshots/power-with-name.png' alt='logo' />
 </p>
