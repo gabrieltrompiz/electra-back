@@ -30,7 +30,7 @@
     "@apollo/gateway": "^0.11.3",
     "apollo-link-context": "^1.0.19",
     "apollo-link-http": "^1.5.16",
-    "apollo-server": "^2.9.12",
+    "apollo-server": "^2.25.3",
     "apollo-server-express": "^2.9.12",
     "bcryptjs": "^2.4.3",
     "bluebird": "^3.7.2",
